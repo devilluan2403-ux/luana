@@ -4,14 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <link rel="manifest" href="site.webmanifest">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Ghi cân</title>
 
   <!-- Apple touch icon (PNG 192/512 recommended). Put icon files in repo root or /assets/ -->
-  <meta name="theme-color" content="#0b5cff">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
   <!-- Web App manifest -->
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.json">
 
   <style>
     :root{--bg:#ffffff;--card:#f7f7f9;--accent:#0b5cff;--muted:#666}
@@ -94,7 +94,7 @@
     // Init date input default to today
     document.getElementById('ngay').value = todayISO();
 
-   function render() {
+    function render() {
   const data = loadData();
   const lichSuEl = document.getElementById('lichSu');
   const emptyHint = document.getElementById('emptyHint');
@@ -169,14 +169,6 @@
   document.getElementById('tongB').textContent = totalB;
   document.getElementById('tongC').textContent = totalC;
 }
-
-        lichSuEl.appendChild(dayWrap);
-      });
-
-      document.getElementById('tongA').textContent = totalA;
-      document.getElementById('tongB').textContent = totalB;
-      document.getElementById('tongC').textContent = totalC;
-    }
 
     function removeItem(day, idx){
       const d = loadData();
