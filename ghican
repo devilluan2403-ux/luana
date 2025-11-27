@@ -1,0 +1,16 @@
+manifest.json
+{
+  "name": "Ghi Sầu Riêng",
+  "short_name": "Sầu Riêng",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0b5cff",
+  "icons": [
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
