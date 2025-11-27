@@ -7,11 +7,19 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Ghi cân</title>
 
+  <!-- Apple touch icon -->
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <!-- Web App manifest -->
   <link rel="manifest" href="manifest.json">
 
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
   <style>
-    :root { --bg:#ffffff; --card:#f7f7f9; --accent:#0b5cff; --muted:#666; }
+    :root {
+      --bg:#ffffff; --card:#f7f7f9; --accent:#0b5cff; --muted:#666;
+    }
     html, body { height:100%; margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial; background:var(--bg); color:#111; }
     .app { max-width:720px; margin:0 auto; padding:18px; box-sizing:border-box; }
     header { display:flex; gap:12px; align-items:center; }
@@ -19,7 +27,7 @@
     .card { background:var(--card); border-radius:14px; padding:12px; box-shadow:0 6px 18px rgba(12,20,40,0.06); margin-top:14px; }
     label { font-size:13px; color:var(--muted); display:block; margin-top:8px; }
     select, input { width:100%; padding:14px; border-radius:10px; border:1px solid #e6e6e9; font-size:16px; box-sizing:border-box; margin-top:6px; }
-    button.primary { width:100%; padding:14px; border-radius:12px; border:0; background:var(--accent); color:white; font-weight:600; font-size:16px; margin-top:12px; cursor:pointer; }
+    button.primary { width:100%; padding:14px; border-radius:12px; border:0; background:var(--accent); color:white; font-weight:600; font-size:16px; margin-top:12px; }
     .small-btn { padding:8px 10px; border-radius:10px; border:0; background:#eee; font-size:13px; cursor:pointer; }
     .history-day { margin-top:12px; }
     .history-item { display:flex; justify-content:space-between; align-items:center; padding:8px; border-radius:10px; margin-top:8px; background:white; }
@@ -35,7 +43,7 @@
   <div class="app" id="app">
     <header><h1>Ghi cân</h1></header>
 
-    <div class="card">
+    <div class="card" aria-label="Nhập liệu">
       <label for="ngay">Ngày</label>
       <input id="ngay" type="date" />
 
@@ -56,10 +64,10 @@
       <input id="soLuong" type="number" inputmode="numeric" min="1" placeholder="Nhập số lượng" />
 
       <button class="primary" id="btnGhi">Ghi lại</button>
-      <button class="small-btn" id="btnXoaTat" style="margin-top:8px;width:100%">Xóa tất cả lịch sử</button>
+      <button class="small-btn" id="btnXoaTat" style="margin-top:8px;width:100%">Xóa toàn bộ lịch sử</button>
     </div>
 
-    <div class="card">
+    <div class="card" id="cardHistory">
       <button class="small-btn" id="btnXemLS" style="width:100%; margin-bottom:8px">Xem lịch sử</button>
       <div id="lichSuContainer" style="display:none">
         <div id="lichSu"></div>
@@ -77,46 +85,50 @@
     </div>
 
     <footer>
-      Mẹo: trên iPhone mở trang này bằng Safari -> nút Chia sẻ -> Thêm vào Màn hình chính để dùng như app.
+      Mẹo: trên iPhone mở trang này bằng Safari → nút Chia sẻ → Thêm vào Màn hình chính để dùng như app.
     </footer>
   </div>
 
   <script>
-    const STORAGE_KEY = 'ghi_sau_rieng_v2';
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "API_KEY",
+      authDomain: "PROJECT_ID.firebaseapp.com",
+      projectId: "PROJECT_ID",
+      storageBucket: "PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    function loadData() {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
-      catch(e) { return {}; }
-    }
-
-    function saveData(d) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
-    }
-
-    function todayISO() {
-      return new Date().toISOString().split('T')[0];
-    }
-
+    function todayISO() { return new Date().toISOString().split('T')[0]; }
     document.getElementById('ngay').value = todayISO();
 
-    function render() {
-      const data = loadData();
+    async function loadAndRender() {
       const lichSuEl = document.getElementById('lichSu');
       const emptyHint = document.getElementById('emptyHint');
-      lichSuEl.innerHTML = '';
+      lichSuEl.innerHTML='';
+
+      const snapshot = await db.collection('lichSu').orderBy('ngay','desc').orderBy('createdAt','desc').get();
+      if(snapshot.empty){ emptyHint.style.display='block'; return; }
+      else emptyHint.style.display='none';
 
       let totalA=0, totalB=0, totalC=0;
-      const days = Object.keys(data).sort((a,b)=> b.localeCompare(a));
 
-      if(days.length===0){ emptyHint.style.display='block'; } 
-      else { emptyHint.style.display='none'; }
+      const grouped = {};
+      snapshot.forEach(doc=>{
+        const data = doc.data();
+        if(!grouped[data.ngay]) grouped[data.ngay]=[];
+        grouped[data.ngay].push({ id:doc.id, ...data });
+      });
 
-      days.forEach(day=>{
+      Object.keys(grouped).sort((a,b)=> b.localeCompare(a)).forEach(day=>{
         const dayWrap = document.createElement('div');
         dayWrap.className='history-day';
 
         const h = document.createElement('h3');
-        h.textContent = day;
+        h.textContent=day;
         h.style.margin='0 0 8px 0';
         h.style.fontSize='14px';
         h.style.cursor='pointer';
@@ -124,20 +136,22 @@
         const itemsWrap = document.createElement('div');
         itemsWrap.style.display='none';
 
-        data[day].forEach((it, idx)=>{
+        grouped[day].forEach(it=>{
           const item = document.createElement('div');
           item.className='history-item';
-
           const left = document.createElement('div');
-          left.innerHTML = `<div style="font-weight:600">${it.loaiSR} — Hạng ${it.loaiHang}</div>
-                            <div class="meta">SL: ${it.soLuong}</div>`;
-
+          left.innerHTML=`<div style="font-weight:600">${it.loaiSR} — Hạng ${it.loaiHang}</div>
+                          <div class="meta">SL: ${it.soLuong}</div>`;
           const right = document.createElement('div');
           const del = document.createElement('button');
           del.className='small-btn';
           del.textContent='Xóa';
-          del.onclick = ()=>{ if(confirm('Xóa mục này?')) removeItem(day, idx); };
-
+          del.onclick=async ()=>{
+            if(confirm('Xóa mục này?')){
+              await db.collection('lichSu').doc(it.id).delete();
+              loadAndRender();
+            }
+          };
           right.appendChild(del);
           item.appendChild(left);
           item.appendChild(right);
@@ -148,10 +162,7 @@
           if(it.loaiHang==='C') totalC+=Number(it.soLuong);
         });
 
-        h.addEventListener('click', ()=>{
-          itemsWrap.style.display = itemsWrap.style.display==='none' ? 'block' : 'none';
-        });
-
+        h.addEventListener('click', ()=>{ itemsWrap.style.display = itemsWrap.style.display==='none'?'block':'none'; });
         dayWrap.appendChild(h);
         dayWrap.appendChild(itemsWrap);
         lichSuEl.appendChild(dayWrap);
@@ -162,48 +173,44 @@
       document.getElementById('tongC').textContent=totalC;
     }
 
-    function removeItem(day, idx){
-      const d = loadData();
-      if(!d[day]) return;
-      d[day].splice(idx,1);
-      if(d[day].length===0) delete d[day];
-      saveData(d);
-      render();
-    }
-
-    document.getElementById('btnGhi').addEventListener('click', ()=>{
-      const loaiSR = document.getElementById('loaiSR').value;
-      const loaiHang = document.getElementById('loaiHang').value;
-      const soLuong = Number(document.getElementById('soLuong').value);
-      const ngay = document.getElementById('ngay').value||todayISO();
+    // Ghi cân
+    document.getElementById('btnGhi').addEventListener('click', async ()=>{
+      const loaiSR=document.getElementById('loaiSR').value;
+      const loaiHang=document.getElementById('loaiHang').value;
+      const soLuong=Number(document.getElementById('soLuong').value);
+      const ngay=document.getElementById('ngay').value||todayISO();
       if(!soLuong || soLuong<1){ alert('Nhập số lượng hợp lệ'); return; }
 
-      const d = loadData();
-      if(!d[ngay]) d[ngay]=[];
-      d[ngay].push({loaiSR, loaiHang, soLuong});
-      saveData(d);
+      await db.collection('lichSu').add({ ngay, loaiSR, loaiHang, soLuong, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
       document.getElementById('soLuong').value='';
-      render();
+      loadAndRender();
     });
 
-    document.getElementById('btnXoaTat').addEventListener('click', ()=>{
-      if(confirm('Xóa toàn bộ lịch sử?')){ localStorage.removeItem(STORAGE_KEY); render(); }
+    // Xóa tất cả
+    document.getElementById('btnXoaTat').addEventListener('click', async ()=>{
+      if(confirm('Xóa toàn bộ lịch sử?')){
+        const snapshot = await db.collection('lichSu').get();
+        const batch = db.batch();
+        snapshot.forEach(doc=> batch.delete(doc.ref));
+        await batch.commit();
+        loadAndRender();
+      }
     });
 
+    // Xem lịch sử
     document.getElementById('btnXemLS').addEventListener('click', ()=>{
       const container = document.getElementById('lichSuContainer');
-      if(container.style.display==='none'){
-        render(); // render trước khi hiển thị
-        container.style.display='block';
-      } else container.style.display='none';
+      if(container.style.display==='none'){ container.style.display='block'; loadAndRender(); }
+      else container.style.display='none';
     });
 
-    document.getElementById('soLuong').addEventListener('keypress',(e)=>{
-      if(e.key==='Enter') document.getElementById('btnGhi').click();
-    });
+    // Enter submit
+    document.getElementById('soLuong').addEventListener('keypress',(e)=>{ if(e.key==='Enter') document.getElementById('btnGhi').click(); });
 
-    render();
+    // Load lần đầu
+    loadAndRender();
 
+    // Service Worker
     if('serviceWorker' in navigator){
       navigator.serviceWorker.register('/sw.js')
         .then(()=>console.log('SW registered'))
