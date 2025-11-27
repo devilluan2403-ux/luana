@@ -7,29 +7,34 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Ghi cân</title>
 
+  <!-- Apple touch icon -->
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <!-- Web App manifest -->
   <link rel="manifest" href="manifest.json">
 
   <style>
-    :root{--bg:#ffffff;--card:#f7f7f9;--accent:#0b5cff;--muted:#666}
-    html,body{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial;background:var(--bg);color:#111}
-    .app{max-width:720px;margin:0 auto;padding:18px;box-sizing:border-box}
-    header{display:flex;gap:12px;align-items:center}
-    h1{font-size:20px;margin:0}
-    .card{background:var(--card);border-radius:14px;padding:12px;box-shadow:0 6px 18px rgba(12,20,40,0.06);margin-top:14px}
-    label{font-size:13px;color:var(--muted);display:block;margin-top:8px}
-    select,input{width:100%;padding:14px;border-radius:10px;border:1px solid #e6e6e9;font-size:16px;box-sizing:border-box;margin-top:6px}
-    .row{display:flex;gap:10px}
-    .row>*{flex:1}
-    button.primary{width:100%;padding:14px;border-radius:12px;border:0;background:var(--accent);color:white;font-weight:600;font-size:16px;margin-top:12px}
-    .small-btn{padding:8px 10px;border-radius:10px;border:0;background:#eee;font-size:13px;cursor:pointer}
-    .history-day{margin-top:12px}
-    .history-item{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:10px;margin-top:8px;background:white}
-    .meta{font-size:13px;color:var(--muted)}
-    .totals{display:flex;gap:8px;justify-content:space-between;margin-top:10px}
-    .total-box{flex:1;background:white;padding:10px;border-radius:10px;text-align:center}
-    .empty{color:var(--muted);padding:18px;text-align:center}
-    footer{font-size:12px;color:var(--muted);text-align:center;margin-top:12px}
+    :root {
+      --bg:#ffffff; --card:#f7f7f9; --accent:#0b5cff; --muted:#666;
+    }
+    html, body {
+      height:100%; margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial;
+      background:var(--bg); color:#111;
+    }
+    .app { max-width:720px; margin:0 auto; padding:18px; box-sizing:border-box; }
+    header { display:flex; gap:12px; align-items:center; }
+    h1 { font-size:20px; margin:0; }
+    .card { background:var(--card); border-radius:14px; padding:12px; box-shadow:0 6px 18px rgba(12,20,40,0.06); margin-top:14px; }
+    label { font-size:13px; color:var(--muted); display:block; margin-top:8px; }
+    select, input { width:100%; padding:14px; border-radius:10px; border:1px solid #e6e6e9; font-size:16px; box-sizing:border-box; margin-top:6px; }
+    button.primary { width:100%; padding:14px; border-radius:12px; border:0; background:var(--accent); color:white; font-weight:600; font-size:16px; margin-top:12px; }
+    .small-btn { padding:8px 10px; border-radius:10px; border:0; background:#eee; font-size:13px; cursor:pointer; }
+    .history-day { margin-top:12px; }
+    .history-item { display:flex; justify-content:space-between; align-items:center; padding:8px; border-radius:10px; margin-top:8px; background:white; }
+    .meta { font-size:13px; color:var(--muted); }
+    .totals { display:flex; gap:8px; justify-content:space-between; margin-top:10px; }
+    .total-box { flex:1; background:white; padding:10px; border-radius:10px; text-align:center; }
+    .empty { color:var(--muted); padding:18px; text-align:center; }
+    footer { font-size:12px; color:var(--muted); text-align:center; margin-top:12px; }
     @media (max-width:420px){.app{padding:12px}h1{font-size:18px}}
   </style>
 </head>
@@ -37,7 +42,6 @@
   <div class="app" id="app">
     <header><h1>Ghi cân</h1></header>
 
-    <!-- Nhập liệu -->
     <div class="card" aria-label="Nhập liệu">
       <label for="ngay">Ngày</label>
       <input id="ngay" type="date" />
@@ -62,7 +66,6 @@
       <button class="small-btn" id="btnXoaTat" style="margin-top:8px;width:100%">Xóa tất cả lịch sử</button>
     </div>
 
-    <!-- Lịch sử -->
     <div class="card" id="cardHistory">
       <button class="small-btn" id="btnXemLS" style="width:100%; margin-bottom:8px">Xem lịch sử</button>
       <div id="lichSuContainer" style="display:none">
@@ -71,7 +74,6 @@
       </div>
     </div>
 
-    <!-- Tổng cộng -->
     <div class="card">
       <h2 style="margin:0 0 8px 0;font-size:16px">Tổng cộng (trong lịch sử)</h2>
       <div class="totals">
@@ -89,49 +91,44 @@
   <script>
     const STORAGE_KEY = 'ghi_sau_rieng_v2';
 
-    function loadData(){ 
-      try{ return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
-      catch(e){ return {}; }
+    function loadData() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+      catch(e) { return {}; }
     }
+    function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+    function todayISO() { return new Date().toISOString().split('T')[0]; }
 
-    function saveData(d){ 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); 
-    }
-
-    function todayISO(){ return new Date().toISOString().split('T')[0]; }
-
-    // Init date input default to today
+    // Init date input
     document.getElementById('ngay').value = todayISO();
 
-    // Render lịch sử
     function render() {
       const data = loadData();
       const lichSuEl = document.getElementById('lichSu');
       const emptyHint = document.getElementById('emptyHint');
       lichSuEl.innerHTML = '';
 
-      let totalA = 0, totalB = 0, totalC = 0;
+      let totalA=0, totalB=0, totalC=0;
       const days = Object.keys(data).sort((a,b)=> b.localeCompare(a));
 
-      if(days.length===0){ emptyHint.style.display = 'block'; }
-      else { emptyHint.style.display = 'none'; }
+      if(days.length===0){ emptyHint.style.display='block'; } 
+      else { emptyHint.style.display='none'; }
 
-      days.forEach(day => {
+      days.forEach(day=>{
         const dayWrap = document.createElement('div');
-        dayWrap.className = 'history-day';
+        dayWrap.className='history-day';
 
         const h = document.createElement('h3');
-        h.textContent = day;
-        h.style.margin = '0 0 8px 0';
-        h.style.fontSize = '14px';
-        h.style.cursor = 'pointer';
+        h.textContent=day;
+        h.style.margin='0 0 8px 0';
+        h.style.fontSize='14px';
+        h.style.cursor='pointer';
 
         const itemsWrap = document.createElement('div');
-        itemsWrap.style.display = 'none';
+        itemsWrap.style.display='none';
 
-        data[day].forEach((it, idx) => {
+        data[day].forEach((it, idx)=>{
           const item = document.createElement('div');
-          item.className = 'history-item';
+          item.className='history-item';
 
           const left = document.createElement('div');
           left.innerHTML = `<div style="font-weight:600">${it.loaiSR} — Hạng ${it.loaiHang}</div>
@@ -139,8 +136,8 @@
 
           const right = document.createElement('div');
           const del = document.createElement('button');
-          del.className = 'small-btn';
-          del.textContent = 'Xóa';
+          del.className='small-btn';
+          del.textContent='Xóa';
           del.onclick = ()=>{ if(confirm('Xóa mục này?')) removeItem(day, idx); };
 
           right.appendChild(del);
@@ -148,13 +145,13 @@
           item.appendChild(right);
           itemsWrap.appendChild(item);
 
-          if(it.loaiHang==='A') totalA += Number(it.soLuong);
-          if(it.loaiHang==='B') totalB += Number(it.soLuong);
-          if(it.loaiHang==='C') totalC += Number(it.soLuong);
+          if(it.loaiHang==='A') totalA+=Number(it.soLuong);
+          if(it.loaiHang==='B') totalB+=Number(it.soLuong);
+          if(it.loaiHang==='C') totalC+=Number(it.soLuong);
         });
 
         h.addEventListener('click', ()=> {
-          itemsWrap.style.display = itemsWrap.style.display === 'none' ? 'block' : 'none';
+          itemsWrap.style.display = itemsWrap.style.display==='none' ? 'block' : 'none';
         });
 
         dayWrap.appendChild(h);
@@ -162,12 +159,11 @@
         lichSuEl.appendChild(dayWrap);
       });
 
-      document.getElementById('tongA').textContent = totalA;
-      document.getElementById('tongB').textContent = totalB;
-      document.getElementById('tongC').textContent = totalC;
+      document.getElementById('tongA').textContent=totalA;
+      document.getElementById('tongB').textContent=totalB;
+      document.getElementById('tongC').textContent=totalC;
     }
 
-    // Remove từng mục
     function removeItem(day, idx){
       const d = loadData();
       if(!d[day]) return;
@@ -177,47 +173,50 @@
       render();
     }
 
-    // Nút xem lịch sử
-    document.getElementById('btnXemLS').addEventListener('click', ()=>{
-      const container = document.getElementById('lichSuContainer');
-      container.style.display = container.style.display==='none'?'block':'none';
-    });
-
-    // Ghi mới
+    // Nút ghi
     document.getElementById('btnGhi').addEventListener('click', ()=>{
-      const loaiSR = document.getElementById('loaiSR').value;
-      const loaiHang = document.getElementById('loaiHang').value;
-      const soLuong = Number(document.getElementById('soLuong').value);
-      const ngay = document.getElementById('ngay').value || todayISO();
+      const loaiSR=document.getElementById('loaiSR').value;
+      const loaiHang=document.getElementById('loaiHang').value;
+      const soLuong=Number(document.getElementById('soLuong').value);
+      const ngay=document.getElementById('ngay').value||todayISO();
       if(!soLuong || soLuong<1){ alert('Nhập số lượng hợp lệ'); return; }
 
       const d = loadData();
       if(!d[ngay]) d[ngay]=[];
-      d[ngay].push({loaiSR,loaiHang,soLuong});
+      d[ngay].push({loaiSR, loaiHang, soLuong});
       saveData(d);
       document.getElementById('soLuong').value='';
       render();
     });
 
-    // Xóa toàn bộ
+    // Nút xóa tất cả
     document.getElementById('btnXoaTat').addEventListener('click', ()=>{
-      if(confirm('Xóa toàn bộ lịch sử?')){ 
-        localStorage.removeItem(STORAGE_KEY); 
-        render(); 
-      }
+      if(confirm('Xóa toàn bộ lịch sử?')){ localStorage.removeItem(STORAGE_KEY); render(); }
     });
 
-    // Enter submit
-    document.getElementById('soLuong').addEventListener('keypress', e=>{
-      if(e.key==='Enter'){ document.getElementById('btnGhi').click(); }
+    // Nút xem lịch sử
+    document.getElementById('btnXemLS').addEventListener('click', ()=>{
+      const container=document.getElementById('lichSuContainer');
+      if(container.style.display==='none'){
+        container.style.display='block';
+        render();
+      } else container.style.display='none';
+    });
+
+    // Enter key submit
+    document.getElementById('soLuong').addEventListener('keypress',(e)=>{
+      if(e.key==='Enter') document.getElementById('btnGhi').click();
     });
 
     render();
 
-    // Service worker offline
+    // Service Worker
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js').then(()=>{console.log('SW registered');}).catch(()=>{console.log('SW failed');});
+      navigator.serviceWorker.register('/sw.js')
+        .then(()=>console.log('SW registered'))
+        .catch(()=>console.log('SW failed'));
     }
+
   </script>
 </body>
 </html>
