@@ -7,26 +7,19 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Ghi cân</title>
 
-  <!-- Apple touch icon -->
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <!-- Web App manifest -->
   <link rel="manifest" href="manifest.json">
 
   <style>
-    :root {
-      --bg:#ffffff; --card:#f7f7f9; --accent:#0b5cff; --muted:#666;
-    }
-    html, body {
-      height:100%; margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial;
-      background:var(--bg); color:#111;
-    }
+    :root { --bg:#ffffff; --card:#f7f7f9; --accent:#0b5cff; --muted:#666; }
+    html, body { height:100%; margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial; background:var(--bg); color:#111; }
     .app { max-width:720px; margin:0 auto; padding:18px; box-sizing:border-box; }
     header { display:flex; gap:12px; align-items:center; }
     h1 { font-size:20px; margin:0; }
     .card { background:var(--card); border-radius:14px; padding:12px; box-shadow:0 6px 18px rgba(12,20,40,0.06); margin-top:14px; }
     label { font-size:13px; color:var(--muted); display:block; margin-top:8px; }
     select, input { width:100%; padding:14px; border-radius:10px; border:1px solid #e6e6e9; font-size:16px; box-sizing:border-box; margin-top:6px; }
-    button.primary { width:100%; padding:14px; border-radius:12px; border:0; background:var(--accent); color:white; font-weight:600; font-size:16px; margin-top:12px; }
+    button.primary { width:100%; padding:14px; border-radius:12px; border:0; background:var(--accent); color:white; font-weight:600; font-size:16px; margin-top:12px; cursor:pointer; }
     .small-btn { padding:8px 10px; border-radius:10px; border:0; background:#eee; font-size:13px; cursor:pointer; }
     .history-day { margin-top:12px; }
     .history-item { display:flex; justify-content:space-between; align-items:center; padding:8px; border-radius:10px; margin-top:8px; background:white; }
@@ -42,7 +35,7 @@
   <div class="app" id="app">
     <header><h1>Ghi cân</h1></header>
 
-    <div class="card" aria-label="Nhập liệu">
+    <div class="card">
       <label for="ngay">Ngày</label>
       <input id="ngay" type="date" />
 
@@ -66,7 +59,7 @@
       <button class="small-btn" id="btnXoaTat" style="margin-top:8px;width:100%">Xóa tất cả lịch sử</button>
     </div>
 
-    <div class="card" id="cardHistory">
+    <div class="card">
       <button class="small-btn" id="btnXemLS" style="width:100%; margin-bottom:8px">Xem lịch sử</button>
       <div id="lichSuContainer" style="display:none">
         <div id="lichSu"></div>
@@ -95,10 +88,15 @@
       try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
       catch(e) { return {}; }
     }
-    function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
-    function todayISO() { return new Date().toISOString().split('T')[0]; }
 
-    // Init date input
+    function saveData(d) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+    }
+
+    function todayISO() {
+      return new Date().toISOString().split('T')[0];
+    }
+
     document.getElementById('ngay').value = todayISO();
 
     function render() {
@@ -118,7 +116,7 @@
         dayWrap.className='history-day';
 
         const h = document.createElement('h3');
-        h.textContent=day;
+        h.textContent = day;
         h.style.margin='0 0 8px 0';
         h.style.fontSize='14px';
         h.style.cursor='pointer';
@@ -150,7 +148,7 @@
           if(it.loaiHang==='C') totalC+=Number(it.soLuong);
         });
 
-        h.addEventListener('click', ()=> {
+        h.addEventListener('click', ()=>{
           itemsWrap.style.display = itemsWrap.style.display==='none' ? 'block' : 'none';
         });
 
@@ -173,12 +171,11 @@
       render();
     }
 
-    // Nút ghi
     document.getElementById('btnGhi').addEventListener('click', ()=>{
-      const loaiSR=document.getElementById('loaiSR').value;
-      const loaiHang=document.getElementById('loaiHang').value;
-      const soLuong=Number(document.getElementById('soLuong').value);
-      const ngay=document.getElementById('ngay').value||todayISO();
+      const loaiSR = document.getElementById('loaiSR').value;
+      const loaiHang = document.getElementById('loaiHang').value;
+      const soLuong = Number(document.getElementById('soLuong').value);
+      const ngay = document.getElementById('ngay').value||todayISO();
       if(!soLuong || soLuong<1){ alert('Nhập số lượng hợp lệ'); return; }
 
       const d = loadData();
@@ -189,34 +186,29 @@
       render();
     });
 
-    // Nút xóa tất cả
     document.getElementById('btnXoaTat').addEventListener('click', ()=>{
       if(confirm('Xóa toàn bộ lịch sử?')){ localStorage.removeItem(STORAGE_KEY); render(); }
     });
 
-    // Nút xem lịch sử
     document.getElementById('btnXemLS').addEventListener('click', ()=>{
-      const container=document.getElementById('lichSuContainer');
+      const container = document.getElementById('lichSuContainer');
       if(container.style.display==='none'){
+        render(); // render trước khi hiển thị
         container.style.display='block';
-        render();
       } else container.style.display='none';
     });
 
-    // Enter key submit
     document.getElementById('soLuong').addEventListener('keypress',(e)=>{
       if(e.key==='Enter') document.getElementById('btnGhi').click();
     });
 
     render();
 
-    // Service Worker
     if('serviceWorker' in navigator){
       navigator.serviceWorker.register('/sw.js')
         .then(()=>console.log('SW registered'))
         .catch(()=>console.log('SW failed'));
     }
-
   </script>
 </body>
 </html>
