@@ -1,75 +1,76 @@
 <!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Ghi cân</title>
-  <link rel="manifest" href="./manifest.json">
-  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
-  <link rel="stylesheet" href="./style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ghi cân</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="stylesheet" href="./style.css">
 </head>
 <body>
 
-  <!-- TỔNG CỘNG -->
-  <div class="card totals-card">
-    <h2>Tổng cộng</h2>
-    <div class="totals">
-      <div class="total-box">A<br><strong id="tongA">0</strong></div>
-      <div class="total-box">B<br><strong id="tongB">0</strong></div>
-      <div class="total-box">C<br><strong id="tongC">0</strong></div>
-    </div>
+<!-- CHỌN NGÀY + LOẠI SẦU RIÊNG -->
+<div class="card">
+  <label>Ngày</label>
+  <input type="date" id="ngay">
+  <label>Loại sầu riêng</label>
+  <select id="loaiSR">
+    <option value="Thai">Thái</option>
+    <option value="Ri">Ri</option>
+  </select>
+</div>
+
+<!-- TỔNG CỘNG -->
+<div class="card totals-card">
+  <h2>Tổng cộng</h2>
+  <div class="totals">
+    <div class="total-box">A<br><strong id="tongA">0</strong></div>
+    <div class="total-box">B<br><strong id="tongB">0</strong></div>
+    <div class="total-box">C<br><strong id="tongC">0</strong></div>
   </div>
+</div>
 
-  <!-- Nhập liệu -->
-  <div class="card input-card">
-    <label>Ngày</label>
-    <input type="date" id="ngay">
-
-    <label>Loại sầu riêng</label>
-    <select id="loaiSR">
-      <option value="Thai">Thái</option>
-      <option value="Ri">Ri</option>
-    </select>
-
-    <label>Loại hàng</label>
-    <div class="hang-group">
-      <div class="hang-btn" data-h="A">A</div>
-      <div class="hang-btn" data-h="B">B</div>
-      <div class="hang-btn" data-h="C">C</div>
-    </div>
-
-    <input id="displaySL" disabled placeholder="Số lượng">
-
-    <!-- BÀN PHÍM SỐ -->
-    <div class="numpad">
-      <button class="num-btn">1</button>
-      <button class="num-btn">2</button>
-      <button class="num-btn">3</button>
-      <button class="num-btn">4</button>
-      <button class="num-btn">5</button>
-      <button class="num-btn">6</button>
-      <button class="num-btn">7</button>
-      <button class="num-btn">8</button>
-      <button class="num-btn">9</button>
-      <button class="num-btn" id="del">⌫</button>
-      <button class="num-btn">0</button>
-      <button class="num-btn" id="enter">↵</button>
-    </div>
+<!-- Nhập liệu -->
+<div class="card input-card">
+  <label>Loại hàng</label>
+  <div class="hang-group">
+    <div class="hang-btn" data-h="A">A</div>
+    <div class="hang-btn" data-h="B">B</div>
+    <div class="hang-btn" data-h="C">C</div>
   </div>
+  <input id="displaySL" disabled placeholder="Số lượng">
 
-  <!-- Lịch sử -->
-  <div class="card history-card">
-    <h2>Lịch sử</h2>
-    <div id="lichSu"></div>
+  <!-- BÀN PHÍM SỐ -->
+  <div class="numpad">
+    <button class="num-btn">1</button>
+    <button class="num-btn">2</button>
+    <button class="num-btn">3</button>
+    <button class="num-btn">4</button>
+    <button class="num-btn">5</button>
+    <button class="num-btn">6</button>
+    <button class="num-btn">7</button>
+    <button class="num-btn">8</button>
+    <button class="num-btn">9</button>
+    <button class="num-btn" id="del">⌫</button>
+    <button class="num-btn">0</button>
+    <button class="num-btn" id="enter">↵</button>
   </div>
+</div>
 
-  <script src="./app.js"></script>
-  <script>
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('./sw.js')
-        .then(()=>console.log('SW registered'))
-        .catch(()=>console.log('SW failed'));
-    }
-  </script>
+<!-- LỊCH SỬ THU GỌN -->
+<div class="card history-card">
+  <h2>Lịch sử</h2>
+  <div id="lichSu"></div>
+</div>
+
+<script src="./app.js"></script>
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js')
+    .then(()=>console.log('SW registered'))
+    .catch(()=>console.log('SW failed'));
+}
+</script>
 </body>
 </html>
