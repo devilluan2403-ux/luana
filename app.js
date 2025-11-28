@@ -1,4 +1,4 @@
-const KEY = "ghi_sau_rieng_v7";
+const KEY = "ghi_sau_rieng_v8";
 
 function load(){ return JSON.parse(localStorage.getItem(KEY)||"{}"); }
 function save(d){ localStorage.setItem(KEY, JSON.stringify(d)); }
@@ -28,7 +28,7 @@ document.querySelectorAll(".num-btn").forEach(btn=>{
     const v = btn.textContent;
     if(btn.id==="del"){ soLuong = soLuong.slice(0,-1); }
     else if(btn.id==="enter"){ submitData(); }
-    else { if(soLuong.length<6) soLuong+=v; } // tối đa 6 chữ số
+    else { if(soLuong.length<6) soLuong+=v; }
     document.getElementById("displaySL").value = formatNum(soLuong||0);
   };
 });
@@ -51,13 +51,20 @@ function submitData(){
   render();
 }
 
+// XÓA TOÀN BỘ DỮ LIỆU
+document.getElementById("xoaTat").onclick = ()=>{
+  if(confirm("Xóa toàn bộ dữ liệu?")){
+    localStorage.removeItem(KEY);
+    render();
+  }
+}
+
 // Render tổng cộng & lịch sử
 function render(){
   const d = load();
   const ngay = ngayEl.value;
   const loaiSR = loaiSREl.value;
 
-  // Tổng từng loại cho ngày + loại sầu riêng
   let tA=0,tB=0,tC=0;
   if(d[ngay]){
     d[ngay].forEach(item=>{
@@ -74,7 +81,7 @@ function render(){
   document.getElementById("tongC").textContent = formatNum(tC);
   document.getElementById("tongAll").textContent = formatNum(tA+tB+tC);
 
-  // Lịch sử thu gọn
+  // Lịch sử
   const out = document.getElementById("lichSu");
   out.innerHTML = "";
   const days = Object.keys(d).sort((a,b)=>b.localeCompare(a));
@@ -91,7 +98,6 @@ function render(){
     const content = document.createElement("div");
     content.style.display="none";
 
-    // Nhóm theo loại hàng
     const group = {A:[], B:[], C:[]};
     d[day].forEach(x=>group[x.hang].push(x));
 
