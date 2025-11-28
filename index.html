@@ -10,6 +10,7 @@
 </head>
 <body>
 
+<script src="./app.js"></script>
 <script>
 // Kiểm tra PWA
 function isStandalone(){
@@ -22,32 +23,25 @@ if(!isStandalone()){
       <h1>Ứng dụng chỉ chạy khi thêm vào Màn hình chính</h1>
       <p>Vui lòng mở Safari, nhấn nút Chia sẻ → Thêm vào Màn hình chính</p>
     </div>`;
-  throw new Error("Not in PWA mode");
-}
-
-// Yêu cầu mật khẩu
-const APP_PASSWORD = "1234"; // Thay mật khẩu bạn muốn
-async function requirePassword(){
-  let ok = false;
-  while(!ok){
-    const pw = prompt("Nhập mật khẩu để mở ứng dụng:");
-    if(pw === null){
-      document.body.innerHTML = "<p>Bỏ qua, không mở app.</p>";
-      throw new Error("Cancelled by user");
+} else {
+  // Yêu cầu mật khẩu
+  const APP_PASSWORD = "devilluan";
+  (async function(){
+    let ok = false;
+    while(!ok){
+      const pw = prompt("Nhập mật khẩu để mở ứng dụng:");
+      if(pw === null){
+        document.body.innerHTML = "<p>Bỏ qua, không mở app.</p>";
+        return;
+      }
+      if(pw === APP_PASSWORD){
+        ok = true;
+      } else alert("Mật khẩu sai, thử lại!");
     }
-    if(pw === APP_PASSWORD){
-      ok = true;
-    } else alert("Mật khẩu sai, thử lại!");
-  }
+    // Khi đúng mật khẩu, khởi tạo app
+    initApp();
+  })();
 }
-
-requirePassword().then(()=>{ 
-  // Load phần app chính
-  document.write(`
-<div id="app-container"></div>
-<script src="./app.js"></script>
-`); 
-});
 </script>
 
 </body>
