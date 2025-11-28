@@ -1,4 +1,4 @@
-const KEY = "ghi_sau_rieng_v11";
+const KEY = "ghi_sau_rieng_v12";
 
 document.addEventListener("DOMContentLoaded",()=>{
 
