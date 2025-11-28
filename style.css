@@ -1,4 +1,3 @@
-/* === TOÀN BỘ BODY === */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -6,7 +5,6 @@ body {
   color: #111;
 }
 
-/* === CARD CHUNG === */
 .card {
   background: #fff;
   border-radius: 14px;
@@ -16,7 +14,6 @@ body {
   box-sizing: border-box;
 }
 
-/* === PHẦN CHỌN NGÀY + LOẠI SẦU RIÊNG === */
 .select-card .select-line {
   margin-bottom: 10px;
 }
@@ -29,7 +26,6 @@ body {
   box-sizing: border-box;
 }
 
-/* === TỔNG CỘNG === */
 .totals-card h2 {
   margin: 0 0 12px 0;
   font-size: 18px;
@@ -50,7 +46,6 @@ body {
   font-weight: 600;
 }
 
-/* === NHẬP LIỆU === */
 .input-card {
   text-align: center;
 }
@@ -85,7 +80,6 @@ body {
   box-sizing: border-box;
 }
 
-/* === BÀN PHÍM SỐ === */
 .numpad {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -107,19 +101,6 @@ body {
   color: #fff;
 }
 
-/* === NÚT XÓA DỮ LIỆU === */
-#xoaTat {
-  width: 100%;
-  padding: 12px;
-  background: #ff4d4f;
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* === LỊCH SỬ === */
 .history-card h2 {
   margin-bottom: 12px;
 }
@@ -155,7 +136,6 @@ body {
   opacity: 0.8;
 }
 
-/* === TAG HẠNG === */
 .tag {
   display: inline-block;
   padding: 2px 8px;
@@ -165,7 +145,21 @@ body {
   font-size: 12px;
 }
 
-/* === RESPONSIVE === */
+.history-card #xoaTat {
+  margin-top: 12px;
+  width: 100%;
+  padding: 12px;
+  background: #ff4d4f;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.history-card #xoaTat:hover {
+  opacity: 0.9;
+}
+
 @media (max-width: 420px) {
   .totals {
     flex-direction: column;
