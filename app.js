@@ -1,10 +1,11 @@
-// Mọi code gói trong initApp()
 function initApp(){
-const KEY = "ghi_sau_rieng_v14";
+const KEY = "ghi_sau_rieng_v15";
 
-const app = document.getElementById("app-container");
+const app = document.createElement("div");
+app.id="app-container";
+document.body.appendChild(app);
+
 app.innerHTML = `
-<!-- CHỌN NGÀY + LOẠI SẦU RIÊNG -->
 <div class="card select-card">
   <div class="select-line"><input type="date" id="ngay"></div>
   <div class="select-line">
@@ -15,9 +16,7 @@ app.innerHTML = `
   </div>
 </div>
 
-<!-- TỔNG CỘNG -->
 <div class="card totals-card">
-  <h2>Tổng cộng</h2>
   <div class="totals">
     <div class="total-box">A<br><strong id="tongA">0</strong></div>
     <div class="total-box">B<br><strong id="tongB">0</strong></div>
@@ -26,7 +25,6 @@ app.innerHTML = `
   <div class="total-box total-all">Tổng<br><strong id="tongAll">0</strong></div>
 </div>
 
-<!-- NHẬP LIỆU -->
 <div class="card input-card">
   <div class="hang-group">
     <div class="hang-btn" data-h="A">A</div>
@@ -50,7 +48,6 @@ app.innerHTML = `
   </div>
 </div>
 
-<!-- LỊCH SỬ + XÓA TOÀN BỘ -->
 <div class="card history-card">
   <h2>Lịch sử</h2>
   <div id="lichSu" class="history-container"></div>
@@ -58,7 +55,7 @@ app.innerHTML = `
 </div>
 `;
 
-// INIT
+// ELEMENTS
 const ngayEl = document.getElementById("ngay");
 const loaiSREl = document.getElementById("loaiSR");
 const displayEl = document.getElementById("displaySL");
@@ -68,7 +65,6 @@ ngayEl.value = new Date().toISOString().split("T")[0];
 
 let hang=null, soLuong="";
 
-// Load/Save
 function load(){ return JSON.parse(localStorage.getItem(KEY)||"{}"); }
 function save(d){ localStorage.setItem(KEY,JSON.stringify(d)); }
 
@@ -81,7 +77,7 @@ document.querySelectorAll(".hang-btn").forEach(btn=>{
   };
 });
 
-// Format số kiểu 1.000
+// Format số
 function formatNum(n){ return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,"."); }
 
 // Bàn phím số
@@ -193,5 +189,3 @@ ngayEl.onchange=render;
 loaiSREl.onchange=render;
 render();
 }
-
-window.initApp = initApp;
