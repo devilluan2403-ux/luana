@@ -1,4 +1,4 @@
-const KEY = "ghi_sau_rieng_v5";
+const KEY = "ghi_sau_rieng_v6";
 
 function load(){ return JSON.parse(localStorage.getItem(KEY)||"{}"); }
 function save(d){ localStorage.setItem(KEY, JSON.stringify(d)); }
@@ -19,7 +19,7 @@ document.querySelectorAll(".hang-btn").forEach(btn=>{
   };
 });
 
-// Bàn phím số
+// Bàn phím số: chỉ cập nhật displaySL khi nhấn
 document.querySelectorAll(".num-btn").forEach(btn=>{
   btn.onclick = ()=>{
     const v = btn.textContent;
@@ -30,7 +30,7 @@ document.querySelectorAll(".num-btn").forEach(btn=>{
   };
 });
 
-// Submit
+// Ghi dữ liệu
 function submitData(){
   if(!hang){ alert("Chọn loại hàng"); return; }
   if(!soLuong){ alert("Nhập số lượng"); return; }
@@ -39,8 +39,8 @@ function submitData(){
   const ngay = ngayEl.value;
   const loaiSR = loaiSREl.value;
 
-  if(!d[ngay]) d[ngay] = [];
-  d[ngay].push({ loaiSR, hang, soLuong:Number(soLuong) });
+  if(!d[ngay]) d[ngay]=[];
+  d[ngay].push({loaiSR, hang, soLuong:Number(soLuong)});
 
   save(d);
   soLuong = "";
@@ -48,13 +48,13 @@ function submitData(){
   render();
 }
 
-// Render tổng & lịch sử
+// Render tổng cộng & lịch sử
 function render(){
   const d = load();
   const ngay = ngayEl.value;
   const loaiSR = loaiSREl.value;
 
-  // Tính tổng cho ngày + loại sầu riêng
+  // Tổng từng loại cho ngày + loại sầu riêng
   let tA=0,tB=0,tC=0;
   if(d[ngay]){
     d[ngay].forEach(item=>{
@@ -69,14 +69,17 @@ function render(){
   document.getElementById("tongA").textContent = tA;
   document.getElementById("tongB").textContent = tB;
   document.getElementById("tongC").textContent = tC;
+  document.getElementById("tongAll").textContent = tA+tB+tC;
 
-  // Lịch sử thu gọn: show ngày, click mở chi tiết
+  // Lịch sử thu gọn
   const out = document.getElementById("lichSu");
   out.innerHTML = "";
   const days = Object.keys(d).sort((a,b)=>b.localeCompare(a));
+
   days.forEach(day=>{
     const dayBox = document.createElement("div");
     dayBox.className="history-day";
+
     const title = document.createElement("div");
     title.className="history-title";
     title.textContent = day;
@@ -86,7 +89,7 @@ function render(){
     content.style.display="none";
 
     // Nhóm theo loại hàng
-    const group={A:[],B:[],C:[]};
+    const group = {A:[], B:[], C:[]};
     d[day].forEach(x=>group[x.hang].push(x));
 
     ["A","B","C"].forEach(h=>{
@@ -108,7 +111,7 @@ function render(){
   });
 }
 
-// Cập nhật khi thay đổi ngày hoặc loại sầu riêng
+// Update khi thay đổi ngày hoặc loại sầu riêng
 ngayEl.onchange = render;
 loaiSREl.onchange = render;
 
