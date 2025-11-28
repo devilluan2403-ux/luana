@@ -2,71 +2,17 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Ghi cân</title>
-
-  <style>
-    :root {
-      --bg:#ffffff; --card:#f7f7f9; --accent:#0b5cff; --muted:#666;
-    }
-    body {
-      margin:0; background:var(--bg); font-family:-apple-system,Segoe UI,Roboto;
-      color:#111; padding:14px;
-    }
-
-    .card {
-      background:var(--card); padding:14px; border-radius:14px;
-      box-shadow:0 4px 14px rgba(0,0,0,0.05); margin-bottom:14px;
-    }
-
-    .totals {
-      display:flex; gap:12px;
-    }
-    .total-box {
-      flex:1; background:white; border-radius:12px; padding:10px;
-      text-align:center; font-size:15px;
-    }
-
-    /* Nút loại Hàng */
-    .hang-group { display:flex; gap:10px; margin:10px 0; }
-    .hang-btn {
-      flex:1; padding:10px 0; border-radius:12px; border:2px solid #ddd;
-      text-align:center; font-size:18px; font-weight:600; cursor:pointer;
-      background:white;
-    }
-    .hang-btn.active {
-      border-color:var(--accent); background:var(--accent); color:white;
-    }
-
-    /* Bàn phím số */
-    .numpad {
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:10px;
-      margin-top:10px;
-    }
-    .num-btn {
-      padding:16px 0; font-size:22px; font-weight:600;
-      border-radius:12px; border:0; background:white;
-      box-shadow:0 2px 6px rgba(0,0,0,0.1); cursor:pointer;
-    }
-    .num-btn:active { transform:scale(0.97); }
-
-    .history-day { margin-top:14px; }
-    .history-title { font-weight:700; margin-bottom:6px; }
-    .history-list { margin-left:10px; }
-
-    .item-line { padding:4px 0; font-size:15px; }
-    .tag { padding:2px 6px; border-radius:6px; font-size:12px; background:#eee; }
-
-  </style>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <link rel="stylesheet" href="./style.css">
 </head>
-
 <body>
 
-  <!-- TỔNG CỘNG TRÊN ĐẦU -->
-  <div class="card">
-    <h2 style="margin-top:0;">Tổng cộng</h2>
+  <!-- TỔNG CỘNG -->
+  <div class="card totals-card">
+    <h2>Tổng cộng</h2>
     <div class="totals">
       <div class="total-box">A<br><strong id="tongA">0</strong></div>
       <div class="total-box">B<br><strong id="tongB">0</strong></div>
@@ -75,12 +21,12 @@
   </div>
 
   <!-- Nhập liệu -->
-  <div class="card">
+  <div class="card input-card">
     <label>Ngày</label>
-    <input type="date" id="ngay" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ccc;font-size:16px;">
+    <input type="date" id="ngay">
 
     <label>Loại sầu riêng</label>
-    <select id="loaiSR" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ccc;font-size:16px;margin-top:6px;">
+    <select id="loaiSR">
       <option value="Thai">Thái</option>
       <option value="Ri">Ri</option>
     </select>
@@ -92,23 +38,19 @@
       <div class="hang-btn" data-h="C">C</div>
     </div>
 
-    <input id="displaySL" disabled
-      style="width:100%;padding:14px;font-size:20px;text-align:center;margin-top:6px;border-radius:10px;border:2px solid #ccc;background:white;">
+    <input id="displaySL" disabled placeholder="Số lượng">
 
     <!-- BÀN PHÍM SỐ -->
     <div class="numpad">
       <button class="num-btn">1</button>
       <button class="num-btn">2</button>
       <button class="num-btn">3</button>
-
       <button class="num-btn">4</button>
       <button class="num-btn">5</button>
       <button class="num-btn">6</button>
-
       <button class="num-btn">7</button>
       <button class="num-btn">8</button>
       <button class="num-btn">9</button>
-
       <button class="num-btn" id="del">⌫</button>
       <button class="num-btn">0</button>
       <button class="num-btn" id="enter">↵</button>
@@ -116,131 +58,18 @@
   </div>
 
   <!-- Lịch sử -->
-  <div class="card">
-    <h2 style="margin-top:0">Lịch sử</h2>
+  <div class="card history-card">
+    <h2>Lịch sử</h2>
     <div id="lichSu"></div>
   </div>
 
-<script>
-const KEY = "ghi_sau_rieng_v3";
-
-function load(){ return JSON.parse(localStorage.getItem(KEY) || "{}"); }
-function save(d){ localStorage.setItem(KEY, JSON.stringify(d)); }
-
-document.getElementById("ngay").value = new Date().toISOString().split("T")[0];
-
-let hang = null;
-let soLuong = "";
-
-// =====================================================
-// CHỌN LOẠI HÀNG A/B/C
-// =====================================================
-document.querySelectorAll(".hang-btn").forEach(btn=>{
-  btn.onclick = ()=>{
-    document.querySelectorAll(".hang-btn").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    hang = btn.dataset.h;
-  };
-});
-
-// =====================================================
-// BÀN PHÍM SỐ
-// =====================================================
-document.querySelectorAll(".num-btn").forEach(btn=>{
-  btn.onclick = ()=>{
-    const v = btn.textContent;
-
-    if(btn.id === "del"){
-      soLuong = soLuong.slice(0,-1);
-    } else if(btn.id === "enter"){
-      submitData();
-    } else {
-      if(soLuong.length < 4) soLuong += v; // hạn chế 4 số
+  <script src="./app.js"></script>
+  <script>
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('./sw.js')
+        .then(()=>console.log('SW registered'))
+        .catch(()=>console.log('SW failed'));
     }
-
-    document.getElementById("displaySL").value = soLuong;
-  };
-});
-
-// =====================================================
-// GHI DỮ LIỆU
-// =====================================================
-function submitData(){
-  if(!hang){ alert("Chọn loại hàng A/B/C"); return; }
-  if(!soLuong){ alert("Nhập số lượng"); return; }
-
-  const d = load();
-  const ngay = document.getElementById("ngay").value;
-  const loaiSR = document.getElementById("loaiSR").value;
-
-  if(!d[ngay]) d[ngay] = [];
-  d[ngay].push({ loaiSR, hang, soLuong:Number(soLuong) });
-
-  save(d);
-  soLuong = "";
-  document.getElementById("displaySL").value = "";
-  render();
-}
-
-// =====================================================
-// RENDER TỔNG + LỊCH SỬ
-// =====================================================
-function render(){
-  const d = load();
-  let tA=0, tB=0, tC=0;
-
-  Object.keys(d).forEach(day=>{
-    d[day].forEach(item=>{
-      if(item.hang==="A") tA+=item.soLuong;
-      if(item.hang==="B") tB+=item.soLuong;
-      if(item.hang==="C") tC+=item.soLuong;
-    });
-  });
-
-  document.getElementById("tongA").textContent = tA;
-  document.getElementById("tongB").textContent = tB;
-  document.getElementById("tongC").textContent = tC;
-
-  const out = document.getElementById("lichSu");
-  out.innerHTML = "";
-
-  const days = Object.keys(d).sort((a,b)=> b.localeCompare(a));
-
-  days.forEach(day=>{
-    const box = document.createElement("div");
-    box.className = "history-day";
-    box.innerHTML = `<div class="history-title">${day}</div>`;
-
-    const group = {A:[],B:[],C:[]};
-
-    d[day].forEach(x=>{
-      group[x.hang].push(x);
-    });
-
-    ["A","B","C"].forEach(h=>{
-      if(group[h].length>0){
-        const hh = document.createElement("div");
-        hh.innerHTML = `<div><span class="tag">Hạng ${h}</span></div>`;
-        
-        const list = document.createElement("div");
-        list.className = "history-list";
-
-        group[h].forEach(x=>{
-          list.innerHTML += `<div class="item-line">${x.loaiSR}: ${x.soLuong}</div>`;
-        });
-
-        hh.appendChild(list);
-        box.appendChild(hh);
-      }
-    });
-
-    out.appendChild(box);
-  });
-}
-
-render();
-
-</script>
-
+  </script>
 </body>
 </html>
