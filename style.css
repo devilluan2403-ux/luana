@@ -31,6 +31,8 @@ body {
   font-size: 18px;
   text-align: center;
 }
+
+/* A, B, C nằm ngang */
 .totals {
   display: flex;
   justify-content: space-between;
@@ -44,6 +46,17 @@ body {
   padding: 12px;
   font-size: 16px;
   font-weight: 600;
+}
+
+/* Tổng nằm dưới */
+.total-all {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  background: #f7f7f9;
+  border-radius: 12px;
+  padding: 12px;
 }
 
 .input-card {
@@ -162,7 +175,7 @@ body {
 
 @media (max-width: 420px) {
   .totals {
-    flex-direction: column;
+    flex-direction: row;
     gap: 6px;
   }
   .total-box {
