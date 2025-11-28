@@ -25,16 +25,25 @@ if(!isStandalone()){
     </div>`;
 } else {
   const APP_PASSWORD = "devilluan";
-  (async function(){
+
+  // Nếu đã xác thực trước đó → vào thẳng app
+  if (localStorage.getItem("authenticated") === "true") {
+    initApp();
+    return;
+  }
+
+  // Nếu chưa xác thực → yêu cầu nhập mật khẩu
+  (async function () {
     let ok = false;
-    while(!ok){
+    while (!ok) {
       const pw = prompt("Nhập mật khẩu để mở ứng dụng:");
-      if(pw === null){
-        document.body.innerHTML = "<p>Bỏ qua, không mở app.</p>";
+      if (pw === null) {
+        document.body.innerHTML = "<p>Đã thoát ứng dụng.</p>";
         return;
       }
-      if(pw === APP_PASSWORD){
+      if (pw === APP_PASSWORD) {
         ok = true;
+        localStorage.setItem("authenticated", "true"); // ghi nhận xác thực
       } else alert("Mật khẩu sai, thử lại!");
     }
     initApp();
