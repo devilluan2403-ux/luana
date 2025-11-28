@@ -24,7 +24,6 @@ if(!isStandalone()){
       <p>Vui lòng mở Safari, nhấn nút Chia sẻ → Thêm vào Màn hình chính</p>
     </div>`;
 } else {
-  // Yêu cầu mật khẩu
   const APP_PASSWORD = "devilluan";
   (async function(){
     let ok = false;
@@ -38,9 +37,15 @@ if(!isStandalone()){
         ok = true;
       } else alert("Mật khẩu sai, thử lại!");
     }
-    // Khi đúng mật khẩu, khởi tạo app
     initApp();
   })();
+}
+
+// Đăng ký Service Worker
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js')
+    .then(()=>console.log('SW registered'))
+    .catch(()=>console.log('SW failed'));
 }
 </script>
 
