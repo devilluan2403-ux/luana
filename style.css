@@ -2,8 +2,7 @@ body {margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'H
 .card{background:#fff;border-radius:14px;padding:16px;margin:12px;box-shadow:0 6px 18px rgba(12,20,40,0.06);box-sizing:border-box;}
 .select-card .select-line{margin-bottom:10px;}
 .select-card input,.select-card select{width:100%;padding:12px;font-size:20px;border-radius:10px;border:1px solid #ddd;box-sizing:border-box;}
-.totals-card h2{margin:0 0 12px 0;font-size:18px;text-align:center;}
-.totals{display:flex;justify-content:space-between;gap:8px;}
+.totals-card .totals{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px;}
 .total-box{flex:1;background:#f7f7f9;border-radius:12px;text-align:center;padding:12px;font-size:16px;font-weight:600;}
 .total-all{margin-top:12px;text-align:center;font-size:16px;font-weight:600;background:#f7f7f9;border-radius:12px;padding:12px;}
 .input-card{text-align:center;}
@@ -24,4 +23,4 @@ body {margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'H
 .tag{display:inline-block;padding:2px 8px;background:#0b5cff;color:#fff;border-radius:8px;font-size:12px;}
 .history-card #xoaTat{margin-top:12px;width:100%;padding:12px;background:#ff4d4f;color:#fff;border:none;border-radius:12px;font-weight:600;cursor:pointer;}
 .history-card #xoaTat:hover{opacity:0.9;}
-@media(max-width:420px){.totals{flex-direction:row;gap:6px;}.total-box{font-size:14px;padding:10px;}.hang-btn{font-size:16px;padding:10px 0;}#displaySL{font-size:20px;}.num-btn{font-size:20px;padding:14px 0;}}
+@media(max-width:420px){.totals-card .totals{flex-direction:row;gap:6px;}.total-box{font-size:14px;padding:10px;}.hang-btn{font-size:16px;padding:10px 0;}#displaySL{font-size:20px;}.num-btn{font-size:20px;padding:14px 0;}}
