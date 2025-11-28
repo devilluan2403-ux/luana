@@ -55,20 +55,17 @@ app.innerHTML = `
 </div>
 `;
 
-// ELEMENTS
 const ngayEl = document.getElementById("ngay");
 const loaiSREl = document.getElementById("loaiSR");
 const displayEl = document.getElementById("displaySL");
 const btnXoa = document.getElementById("xoaTat");
 
 ngayEl.value = new Date().toISOString().split("T")[0];
-
 let hang=null, soLuong="";
 
 function load(){ return JSON.parse(localStorage.getItem(KEY)||"{}"); }
 function save(d){ localStorage.setItem(KEY,JSON.stringify(d)); }
 
-// Chọn loại hàng
 document.querySelectorAll(".hang-btn").forEach(btn=>{
   btn.onclick = ()=>{
     document.querySelectorAll(".hang-btn").forEach(b=>b.classList.remove("active"));
@@ -77,10 +74,8 @@ document.querySelectorAll(".hang-btn").forEach(btn=>{
   };
 });
 
-// Format số
 function formatNum(n){ return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,"."); }
 
-// Bàn phím số
 document.querySelectorAll(".num-btn").forEach(btn=>{
   btn.onclick = ()=>{
     const v = btn.textContent;
@@ -107,7 +102,6 @@ function submitData(){
   render();
 }
 
-// Xóa toàn bộ dữ liệu
 btnXoa.onclick = ()=>{
   if(confirm("Xóa toàn bộ dữ liệu?")){
     localStorage.removeItem(KEY);
@@ -115,13 +109,11 @@ btnXoa.onclick = ()=>{
   }
 }
 
-// Render tổng cộng & lịch sử
 function render(){
   const d = load();
   const ngay = ngayEl.value;
   const loaiSR = loaiSREl.value;
 
-  // Tổng cộng
   let tA=0,tB=0,tC=0;
   if(d[ngay]){
     d[ngay].forEach(item=>{
@@ -137,7 +129,6 @@ function render(){
   document.getElementById("tongC").textContent=formatNum(tC);
   document.getElementById("tongAll").textContent=formatNum(tA+tB+tC);
 
-  // Lịch sử
   const out=document.getElementById("lichSu");
   out.innerHTML="";
   const days=Object.keys(d).sort((a,b)=>b.localeCompare(a));
