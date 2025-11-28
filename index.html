@@ -98,7 +98,6 @@
     function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
     function todayISO() { return new Date().toISOString().split('T')[0]; }
 
-    // Init date input
     document.getElementById('ngay').value = todayISO();
 
     function render() {
@@ -173,7 +172,6 @@
       render();
     }
 
-    // Nút ghi
     document.getElementById('btnGhi').addEventListener('click', ()=>{
       const loaiSR=document.getElementById('loaiSR').value;
       const loaiHang=document.getElementById('loaiHang').value;
@@ -189,12 +187,10 @@
       render();
     });
 
-    // Nút xóa tất cả
     document.getElementById('btnXoaTat').addEventListener('click', ()=>{
       if(confirm('Xóa toàn bộ lịch sử?')){ localStorage.removeItem(STORAGE_KEY); render(); }
     });
 
-    // Nút xem lịch sử
     document.getElementById('btnXemLS').addEventListener('click', ()=>{
       const container=document.getElementById('lichSuContainer');
       if(container.style.display==='none'){
@@ -203,16 +199,16 @@
       } else container.style.display='none';
     });
 
-    // Enter key submit
     document.getElementById('soLuong').addEventListener('keypress',(e)=>{
       if(e.key==='Enter') document.getElementById('btnGhi').click();
     });
 
     render();
 
-    // Service Worker
+    // --- FIX LỖI 404 TẠI ĐÂY ---
+    // Đổi "/sw.js" → "./sw.js"
     if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/sw.js')
+      navigator.serviceWorker.register('./sw.js')
         .then(()=>console.log('SW registered'))
         .catch(()=>console.log('SW failed'));
     }
