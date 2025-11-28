@@ -10,6 +10,21 @@
 </head>
 <body>
 
+<!-- CHỌN NGÀY + LOẠI SẦU RIÊNG TRÊN TỔNG CỘNG -->
+<div class="card select-card">
+  <div>
+    <label>Ngày</label>
+    <input type="date" id="ngay">
+  </div>
+  <div>
+    <label>Loại sầu riêng</label>
+    <select id="loaiSR">
+      <option value="Thai">Thái</option>
+      <option value="Ri">Ri</option>
+    </select>
+  </div>
+</div>
+
 <!-- TỔNG CỘNG -->
 <div class="card totals-card">
   <h2>Tổng cộng</h2>
@@ -19,17 +34,6 @@
     <div class="total-box">C<br><strong id="tongC">0</strong></div>
     <div class="total-box">Tổng<br><strong id="tongAll">0</strong></div>
   </div>
-</div>
-
-<!-- CHỌN NGÀY + LOẠI SẦU RIÊNG -->
-<div class="card select-card">
-  <label>Ngày</label>
-  <input type="date" id="ngay">
-  <label>Loại sầu riêng</label>
-  <select id="loaiSR">
-    <option value="Thai">Thái</option>
-    <option value="Ri">Ri</option>
-  </select>
 </div>
 
 <!-- Nhập liệu -->
