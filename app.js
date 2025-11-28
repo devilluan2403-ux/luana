@@ -1,4 +1,4 @@
-const KEY = "ghi_sau_rieng_v9";
+const KEY = "ghi_sau_rieng_v10";
 
 document.addEventListener("DOMContentLoaded",()=>{
 
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded",()=>{
       if(btn.id==="del"){ soLuong = soLuong.slice(0,-1); }
       else if(btn.id==="enter"){ submitData(); }
       else { if(soLuong.length<6) soLuong+=v; }
-      displayEl.value = formatNum(soLuong||0);
+      displayEl.value = soLuong?formatNum(soLuong):"";
     };
   });
 
@@ -105,14 +105,37 @@ document.addEventListener("DOMContentLoaded",()=>{
       content.style.display="none";
 
       const group = {A:[], B:[], C:[]};
-      d[day].forEach(x=>group[x.hang].push(x));
+      d[day].forEach((x, idx)=>{
+        group[x.hang].push({...x, idx});
+      });
 
       ["A","B","C"].forEach(h=>{
         if(group[h].length>0){
           const hDiv = document.createElement("div");
           hDiv.innerHTML=`<div><span class="tag">Hạng ${h}</span></div>`;
           const list = document.createElement("div"); list.className="history-list";
-          group[h].forEach(x=>list.innerHTML+=`<div class="item-line">${x.loaiSR}: ${formatNum(x.soLuong)}</div>`);
+
+          group[h].forEach(x=>{
+            const itemLine = document.createElement("div");
+            itemLine.className="item-line";
+            itemLine.innerHTML = `${x.loaiSR}: ${formatNum(x.soLuong)} `;
+
+            const delBtn = document.createElement("button");
+            delBtn.textContent = "XÓA";
+            delBtn.className = "small-btn";
+            delBtn.onclick = ()=>{
+              if(confirm("Xóa mục này?")){
+                d[day].splice(x.idx,1);
+                if(d[day].length===0) delete d[day];
+                save(d);
+                render();
+              }
+            };
+
+            itemLine.appendChild(delBtn);
+            list.appendChild(itemLine);
+          });
+
           hDiv.appendChild(list);
           content.appendChild(hDiv);
         }
