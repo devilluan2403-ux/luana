@@ -1,4 +1,4 @@
-const KEY = "ghi_sau_rieng_v6";
+const KEY = "ghi_sau_rieng_v7";
 
 function load(){ return JSON.parse(localStorage.getItem(KEY)||"{}"); }
 function save(d){ localStorage.setItem(KEY, JSON.stringify(d)); }
@@ -19,18 +19,21 @@ document.querySelectorAll(".hang-btn").forEach(btn=>{
   };
 });
 
-// Bàn phím số: chỉ cập nhật displaySL khi nhấn
+// Format số kiểu 1.000
+function formatNum(n){ return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,"."); }
+
+// Bàn phím số
 document.querySelectorAll(".num-btn").forEach(btn=>{
   btn.onclick = ()=>{
     const v = btn.textContent;
     if(btn.id==="del"){ soLuong = soLuong.slice(0,-1); }
     else if(btn.id==="enter"){ submitData(); }
-    else { if(soLuong.length<4) soLuong+=v; }
-    document.getElementById("displaySL").value = soLuong;
+    else { if(soLuong.length<6) soLuong+=v; } // tối đa 6 chữ số
+    document.getElementById("displaySL").value = formatNum(soLuong||0);
   };
 });
 
-// Ghi dữ liệu
+// Submit dữ liệu
 function submitData(){
   if(!hang){ alert("Chọn loại hàng"); return; }
   if(!soLuong){ alert("Nhập số lượng"); return; }
@@ -66,10 +69,10 @@ function render(){
     });
   }
 
-  document.getElementById("tongA").textContent = tA;
-  document.getElementById("tongB").textContent = tB;
-  document.getElementById("tongC").textContent = tC;
-  document.getElementById("tongAll").textContent = tA+tB+tC;
+  document.getElementById("tongA").textContent = formatNum(tA);
+  document.getElementById("tongB").textContent = formatNum(tB);
+  document.getElementById("tongC").textContent = formatNum(tC);
+  document.getElementById("tongAll").textContent = formatNum(tA+tB+tC);
 
   // Lịch sử thu gọn
   const out = document.getElementById("lichSu");
@@ -97,7 +100,7 @@ function render(){
         const hDiv = document.createElement("div");
         hDiv.innerHTML=`<div><span class="tag">Hạng ${h}</span></div>`;
         const list = document.createElement("div"); list.className="history-list";
-        group[h].forEach(x=>list.innerHTML+=`<div class="item-line">${x.loaiSR}: ${x.soLuong}</div>`);
+        group[h].forEach(x=>list.innerHTML+=`<div class="item-line">${x.loaiSR}: ${formatNum(x.soLuong)}</div>`);
         hDiv.appendChild(list);
         content.appendChild(hDiv);
       }
@@ -111,7 +114,7 @@ function render(){
   });
 }
 
-// Update khi thay đổi ngày hoặc loại sầu riêng
+// Cập nhật khi thay đổi ngày hoặc loại sầu riêng
 ngayEl.onchange = render;
 loaiSREl.onchange = render;
 
