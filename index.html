@@ -3,216 +3,244 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Ghi cân</title>
-
-  <!-- Apple touch icon -->
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <!-- Web App manifest -->
-  <link rel="manifest" href="manifest.json">
 
   <style>
     :root {
       --bg:#ffffff; --card:#f7f7f9; --accent:#0b5cff; --muted:#666;
     }
-    html, body {
-      height:100%; margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial;
-      background:var(--bg); color:#111;
+    body {
+      margin:0; background:var(--bg); font-family:-apple-system,Segoe UI,Roboto;
+      color:#111; padding:14px;
     }
-    .app { max-width:720px; margin:0 auto; padding:18px; box-sizing:border-box; }
-    header { display:flex; gap:12px; align-items:center; }
-    h1 { font-size:20px; margin:0; }
-    .card { background:var(--card); border-radius:14px; padding:12px; box-shadow:0 6px 18px rgba(12,20,40,0.06); margin-top:14px; }
-    label { font-size:13px; color:var(--muted); display:block; margin-top:8px; }
-    select, input { width:100%; padding:14px; border-radius:10px; border:1px solid #e6e6e9; font-size:16px; box-sizing:border-box; margin-top:6px; }
-    button.primary { width:100%; padding:14px; border-radius:12px; border:0; background:var(--accent); color:white; font-weight:600; font-size:16px; margin-top:12px; }
-    .small-btn { padding:8px 10px; border-radius:10px; border:0; background:#eee; font-size:13px; cursor:pointer; }
-    .history-day { margin-top:12px; }
-    .history-item { display:flex; justify-content:space-between; align-items:center; padding:8px; border-radius:10px; margin-top:8px; background:white; }
-    .meta { font-size:13px; color:var(--muted); }
-    .totals { display:flex; gap:8px; justify-content:space-between; margin-top:10px; }
-    .total-box { flex:1; background:white; padding:10px; border-radius:10px; text-align:center; }
-    .empty { color:var(--muted); padding:18px; text-align:center; }
-    footer { font-size:12px; color:var(--muted); text-align:center; margin-top:12px; }
-    @media (max-width:420px){.app{padding:12px}h1{font-size:18px}}
+
+    .card {
+      background:var(--card); padding:14px; border-radius:14px;
+      box-shadow:0 4px 14px rgba(0,0,0,0.05); margin-bottom:14px;
+    }
+
+    .totals {
+      display:flex; gap:12px;
+    }
+    .total-box {
+      flex:1; background:white; border-radius:12px; padding:10px;
+      text-align:center; font-size:15px;
+    }
+
+    /* Nút loại Hàng */
+    .hang-group { display:flex; gap:10px; margin:10px 0; }
+    .hang-btn {
+      flex:1; padding:10px 0; border-radius:12px; border:2px solid #ddd;
+      text-align:center; font-size:18px; font-weight:600; cursor:pointer;
+      background:white;
+    }
+    .hang-btn.active {
+      border-color:var(--accent); background:var(--accent); color:white;
+    }
+
+    /* Bàn phím số */
+    .numpad {
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-top:10px;
+    }
+    .num-btn {
+      padding:16px 0; font-size:22px; font-weight:600;
+      border-radius:12px; border:0; background:white;
+      box-shadow:0 2px 6px rgba(0,0,0,0.1); cursor:pointer;
+    }
+    .num-btn:active { transform:scale(0.97); }
+
+    .history-day { margin-top:14px; }
+    .history-title { font-weight:700; margin-bottom:6px; }
+    .history-list { margin-left:10px; }
+
+    .item-line { padding:4px 0; font-size:15px; }
+    .tag { padding:2px 6px; border-radius:6px; font-size:12px; background:#eee; }
+
   </style>
 </head>
+
 <body>
-  <div class="app" id="app">
-    <header><h1>Ghi cân</h1></header>
 
-    <div class="card" aria-label="Nhập liệu">
-      <label for="ngay">Ngày</label>
-      <input id="ngay" type="date" />
-
-      <label for="loaiSR">Loại sầu riêng</label>
-      <select id="loaiSR">
-        <option value="Thai">Thái</option>
-        <option value="Ri">Ri</option>
-      </select>
-
-      <label for="loaiHang">Loại hàng</label>
-      <select id="loaiHang">
-        <option value="A">A</option>
-        <option value="B">B</option>
-        <option value="C">C</option>
-      </select>
-
-      <label for="soLuong">Số lượng</label>
-      <input id="soLuong" type="number" inputmode="numeric" min="1" placeholder="Nhập số lượng" />
-
-      <button class="primary" id="btnGhi">Ghi lại</button>
-      <button class="small-btn" id="btnXoaTat" style="margin-top:8px;width:100%">Xóa tất cả lịch sử</button>
+  <!-- TỔNG CỘNG TRÊN ĐẦU -->
+  <div class="card">
+    <h2 style="margin-top:0;">Tổng cộng</h2>
+    <div class="totals">
+      <div class="total-box">A<br><strong id="tongA">0</strong></div>
+      <div class="total-box">B<br><strong id="tongB">0</strong></div>
+      <div class="total-box">C<br><strong id="tongC">0</strong></div>
     </div>
-
-    <div class="card" id="cardHistory">
-      <button class="small-btn" id="btnXemLS" style="width:100%; margin-bottom:8px">Xem lịch sử</button>
-      <div id="lichSuContainer" style="display:none">
-        <div id="lichSu"></div>
-        <div id="emptyHint" class="empty">Chưa có dữ liệu.</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2 style="margin:0 0 8px 0;font-size:16px">Tổng cộng (trong lịch sử)</h2>
-      <div class="totals">
-        <div class="total-box">A<br/><strong id="tongA">0</strong></div>
-        <div class="total-box">B<br/><strong id="tongB">0</strong></div>
-        <div class="total-box">C<br/><strong id="tongC">0</strong></div>
-      </div>
-    </div>
-
-    <footer>
-      Mẹo: trên iPhone mở trang này bằng Safari -> nút Chia sẻ -> Thêm vào Màn hình chính để dùng như app.
-    </footer>
   </div>
 
-  <script>
-    const STORAGE_KEY = 'ghi_sau_rieng_v2';
+  <!-- Nhập liệu -->
+  <div class="card">
+    <label>Ngày</label>
+    <input type="date" id="ngay" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ccc;font-size:16px;">
 
-    function loadData() {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
-      catch(e) { return {}; }
+    <label>Loại sầu riêng</label>
+    <select id="loaiSR" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ccc;font-size:16px;margin-top:6px;">
+      <option value="Thai">Thái</option>
+      <option value="Ri">Ri</option>
+    </select>
+
+    <label>Loại hàng</label>
+    <div class="hang-group">
+      <div class="hang-btn" data-h="A">A</div>
+      <div class="hang-btn" data-h="B">B</div>
+      <div class="hang-btn" data-h="C">C</div>
+    </div>
+
+    <input id="displaySL" disabled
+      style="width:100%;padding:14px;font-size:20px;text-align:center;margin-top:6px;border-radius:10px;border:2px solid #ccc;background:white;">
+
+    <!-- BÀN PHÍM SỐ -->
+    <div class="numpad">
+      <button class="num-btn">1</button>
+      <button class="num-btn">2</button>
+      <button class="num-btn">3</button>
+
+      <button class="num-btn">4</button>
+      <button class="num-btn">5</button>
+      <button class="num-btn">6</button>
+
+      <button class="num-btn">7</button>
+      <button class="num-btn">8</button>
+      <button class="num-btn">9</button>
+
+      <button class="num-btn" id="del">⌫</button>
+      <button class="num-btn">0</button>
+      <button class="num-btn" id="enter">↵</button>
+    </div>
+  </div>
+
+  <!-- Lịch sử -->
+  <div class="card">
+    <h2 style="margin-top:0">Lịch sử</h2>
+    <div id="lichSu"></div>
+  </div>
+
+<script>
+const KEY = "ghi_sau_rieng_v3";
+
+function load(){ return JSON.parse(localStorage.getItem(KEY) || "{}"); }
+function save(d){ localStorage.setItem(KEY, JSON.stringify(d)); }
+
+document.getElementById("ngay").value = new Date().toISOString().split("T")[0];
+
+let hang = null;
+let soLuong = "";
+
+// =====================================================
+// CHỌN LOẠI HÀNG A/B/C
+// =====================================================
+document.querySelectorAll(".hang-btn").forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll(".hang-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    hang = btn.dataset.h;
+  };
+});
+
+// =====================================================
+// BÀN PHÍM SỐ
+// =====================================================
+document.querySelectorAll(".num-btn").forEach(btn=>{
+  btn.onclick = ()=>{
+    const v = btn.textContent;
+
+    if(btn.id === "del"){
+      soLuong = soLuong.slice(0,-1);
+    } else if(btn.id === "enter"){
+      submitData();
+    } else {
+      if(soLuong.length < 4) soLuong += v; // hạn chế 4 số
     }
-    function saveData(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
-    function todayISO() { return new Date().toISOString().split('T')[0]; }
 
-    document.getElementById('ngay').value = todayISO();
+    document.getElementById("displaySL").value = soLuong;
+  };
+});
 
-    function render() {
-      const data = loadData();
-      const lichSuEl = document.getElementById('lichSu');
-      const emptyHint = document.getElementById('emptyHint');
-      lichSuEl.innerHTML = '';
+// =====================================================
+// GHI DỮ LIỆU
+// =====================================================
+function submitData(){
+  if(!hang){ alert("Chọn loại hàng A/B/C"); return; }
+  if(!soLuong){ alert("Nhập số lượng"); return; }
 
-      let totalA=0, totalB=0, totalC=0;
-      const days = Object.keys(data).sort((a,b)=> b.localeCompare(a));
+  const d = load();
+  const ngay = document.getElementById("ngay").value;
+  const loaiSR = document.getElementById("loaiSR").value;
 
-      if(days.length===0){ emptyHint.style.display='block'; } 
-      else { emptyHint.style.display='none'; }
+  if(!d[ngay]) d[ngay] = [];
+  d[ngay].push({ loaiSR, hang, soLuong:Number(soLuong) });
 
-      days.forEach(day=>{
-        const dayWrap = document.createElement('div');
-        dayWrap.className='history-day';
+  save(d);
+  soLuong = "";
+  document.getElementById("displaySL").value = "";
+  render();
+}
 
-        const h = document.createElement('h3');
-        h.textContent=day;
-        h.style.margin='0 0 8px 0';
-        h.style.fontSize='14px';
-        h.style.cursor='pointer';
+// =====================================================
+// RENDER TỔNG + LỊCH SỬ
+// =====================================================
+function render(){
+  const d = load();
+  let tA=0, tB=0, tC=0;
 
-        const itemsWrap = document.createElement('div');
-        itemsWrap.style.display='none';
+  Object.keys(d).forEach(day=>{
+    d[day].forEach(item=>{
+      if(item.hang==="A") tA+=item.soLuong;
+      if(item.hang==="B") tB+=item.soLuong;
+      if(item.hang==="C") tC+=item.soLuong;
+    });
+  });
 
-        data[day].forEach((it, idx)=>{
-          const item = document.createElement('div');
-          item.className='history-item';
+  document.getElementById("tongA").textContent = tA;
+  document.getElementById("tongB").textContent = tB;
+  document.getElementById("tongC").textContent = tC;
 
-          const left = document.createElement('div');
-          left.innerHTML = `<div style="font-weight:600">${it.loaiSR} — Hạng ${it.loaiHang}</div>
-                            <div class="meta">SL: ${it.soLuong}</div>`;
+  const out = document.getElementById("lichSu");
+  out.innerHTML = "";
 
-          const right = document.createElement('div');
-          const del = document.createElement('button');
-          del.className='small-btn';
-          del.textContent='Xóa';
-          del.onclick = ()=>{ if(confirm('Xóa mục này?')) removeItem(day, idx); };
+  const days = Object.keys(d).sort((a,b)=> b.localeCompare(a));
 
-          right.appendChild(del);
-          item.appendChild(left);
-          item.appendChild(right);
-          itemsWrap.appendChild(item);
+  days.forEach(day=>{
+    const box = document.createElement("div");
+    box.className = "history-day";
+    box.innerHTML = `<div class="history-title">${day}</div>`;
 
-          if(it.loaiHang==='A') totalA+=Number(it.soLuong);
-          if(it.loaiHang==='B') totalB+=Number(it.soLuong);
-          if(it.loaiHang==='C') totalC+=Number(it.soLuong);
+    const group = {A:[],B:[],C:[]};
+
+    d[day].forEach(x=>{
+      group[x.hang].push(x);
+    });
+
+    ["A","B","C"].forEach(h=>{
+      if(group[h].length>0){
+        const hh = document.createElement("div");
+        hh.innerHTML = `<div><span class="tag">Hạng ${h}</span></div>`;
+        
+        const list = document.createElement("div");
+        list.className = "history-list";
+
+        group[h].forEach(x=>{
+          list.innerHTML += `<div class="item-line">${x.loaiSR}: ${x.soLuong}</div>`;
         });
 
-        h.addEventListener('click', ()=> {
-          itemsWrap.style.display = itemsWrap.style.display==='none' ? 'block' : 'none';
-        });
-
-        dayWrap.appendChild(h);
-        dayWrap.appendChild(itemsWrap);
-        lichSuEl.appendChild(dayWrap);
-      });
-
-      document.getElementById('tongA').textContent=totalA;
-      document.getElementById('tongB').textContent=totalB;
-      document.getElementById('tongC').textContent=totalC;
-    }
-
-    function removeItem(day, idx){
-      const d = loadData();
-      if(!d[day]) return;
-      d[day].splice(idx,1);
-      if(d[day].length===0) delete d[day];
-      saveData(d);
-      render();
-    }
-
-    document.getElementById('btnGhi').addEventListener('click', ()=>{
-      const loaiSR=document.getElementById('loaiSR').value;
-      const loaiHang=document.getElementById('loaiHang').value;
-      const soLuong=Number(document.getElementById('soLuong').value);
-      const ngay=document.getElementById('ngay').value||todayISO();
-      if(!soLuong || soLuong<1){ alert('Nhập số lượng hợp lệ'); return; }
-
-      const d = loadData();
-      if(!d[ngay]) d[ngay]=[];
-      d[ngay].push({loaiSR, loaiHang, soLuong});
-      saveData(d);
-      document.getElementById('soLuong').value='';
-      render();
+        hh.appendChild(list);
+        box.appendChild(hh);
+      }
     });
 
-    document.getElementById('btnXoaTat').addEventListener('click', ()=>{
-      if(confirm('Xóa toàn bộ lịch sử?')){ localStorage.removeItem(STORAGE_KEY); render(); }
-    });
+    out.appendChild(box);
+  });
+}
 
-    document.getElementById('btnXemLS').addEventListener('click', ()=>{
-      const container=document.getElementById('lichSuContainer');
-      if(container.style.display==='none'){
-        container.style.display='block';
-        render();
-      } else container.style.display='none';
-    });
+render();
 
-    document.getElementById('soLuong').addEventListener('keypress',(e)=>{
-      if(e.key==='Enter') document.getElementById('btnGhi').click();
-    });
+</script>
 
-    render();
-
-    // --- FIX LỖI 404 TẠI ĐÂY ---
-    // Đổi "/sw.js" → "./sw.js"
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('./sw.js')
-        .then(()=>console.log('SW registered'))
-        .catch(()=>console.log('SW failed'));
-    }
-
-  </script>
 </body>
 </html>
