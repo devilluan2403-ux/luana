@@ -1,11 +1,11 @@
-const KEY = "ghi_sau_rieng_v10";
+const KEY = "ghi_sau_rieng_v11";
 
 document.addEventListener("DOMContentLoaded",()=>{
 
   const ngayEl = document.getElementById("ngay");
   const loaiSREl = document.getElementById("loaiSR");
   const displayEl = document.getElementById("displaySL");
-  const btnXoa = document.getElementById("xoaTat");
+  const btnXoa = document.querySelector(".history-card #xoaTat");
 
   ngayEl.value = new Date().toISOString().split("T")[0];
 
