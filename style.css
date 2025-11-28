@@ -1,0 +1,43 @@
+:root {
+  --bg:#ffffff; --card:#f7f7f9; --accent:#0b5cff; --muted:#666;
+}
+
+body {
+  margin:0;
+  font-family:-apple-system,Segoe UI,Roboto;
+  background:var(--bg);
+  color:#111;
+  padding:14px;
+}
+
+.card {
+  background:var(--card);
+  padding:14px;
+  border-radius:14px;
+  box-shadow:0 4px 14px rgba(0,0,0,0.05);
+  margin-bottom:14px;
+}
+
+/* TỔNG CỘNG */
+.totals { display:flex; gap:12px; }
+.total-box { flex:1; background:white; border-radius:12px; padding:10px; text-align:center; font-size:15px; }
+
+/* NÚT LOẠI HÀNG */
+.hang-group { display:flex; gap:10px; margin:10px 0; }
+.hang-btn { flex:1; padding:10px 0; border-radius:12px; border:2px solid #ddd; text-align:center; font-size:18px; font-weight:600; cursor:pointer; background:white; }
+.hang-btn.active { border-color:var(--accent); background:var(--accent); color:white; }
+
+/* INPUT HIỂN THỊ SỐ */
+#displaySL { width:100%; padding:14px; font-size:20px; text-align:center; border-radius:10px; border:2px solid #ccc; margin-top:6px; background:white; }
+
+/* BÀN PHÍM SỐ */
+.numpad { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:10px; }
+.num-btn { padding:16px 0; font-size:22px; font-weight:600; border-radius:12px; border:0; background:white; box-shadow:0 2px 6px rgba(0,0,0,0.1); cursor:pointer; }
+.num-btn:active { transform:scale(0.97); }
+
+/* LỊCH SỬ */
+.history-day { margin-top:14px; }
+.history-title { font-weight:700; margin-bottom:6px; }
+.history-list { margin-left:10px; }
+.item-line { padding:4px 0; font-size:15px; }
+.tag { padding:2px 6px; border-radius:6px; font-size:12px; background:#eee; }
