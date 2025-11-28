@@ -1,51 +1,66 @@
 <!doctype html>
 <html lang="vi">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ghi cân</title>
-<link rel="manifest" href="./manifest.json">
-<link rel="apple-touch-icon" href="./apple-touch-icon.png">
-<link rel="stylesheet" href="./style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>Ghi cân</title>
+
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./style.css">
+
+  <meta name="theme-color" content="#008f39" />
 </head>
 <body>
 
+<div id="app"></div>
+
 <script src="./app.js"></script>
+
 <script>
-// Kiểm tra PWA
+// Kiểm tra chế độ standalone
 function isStandalone(){
-  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 }
 
 if(!isStandalone()){
   document.body.innerHTML = `
     <div style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;text-align:center;padding:20px;">
-      <h1>Ứng dụng chỉ chạy khi thêm vào Màn hình chính</h1>
-      <p>Vui lòng mở Safari, nhấn nút Chia sẻ → Thêm vào Màn hình chính</p>
+      <h2>⚠ Ứng dụng chỉ chạy khi thêm vào Màn hình chính</h2>
+      <p>Mở Safari → Chia sẻ → Thêm vào Màn hình chính</p>
     </div>`;
 } else {
   const APP_PASSWORD = "devilluan";
-  (async function(){
-    let ok = false;
-    while(!ok){
-      const pw = prompt("Nhập mật khẩu để mở ứng dụng:");
-      if(pw === null){
-        document.body.innerHTML = "<p>Bỏ qua, không mở app.</p>";
-        return;
-      }
-      if(pw === APP_PASSWORD){
-        ok = true;
-      } else alert("Mật khẩu sai, thử lại!");
-    }
+
+  // Nếu đã xác thực thì vào thẳng app
+  if (localStorage.getItem("authenticated") === "true") {
     initApp();
-  })();
+  } else {
+    (async function () {
+      let ok = false;
+      while (!ok) {
+        const pw = prompt("Nhập mật khẩu để mở ứng dụng:");
+        if (pw === null) {
+          document.body.innerHTML = "<p>Đã thoát ứng dụng.</p>";
+          return;
+        }
+        if (pw === APP_PASSWORD) {
+          ok = true;
+          localStorage.setItem("authenticated", "true");
+        } else alert("Mật khẩu sai, thử lại!");
+      }
+      initApp();
+    })();
+  }
 }
 
 // Đăng ký Service Worker
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js')
-    .then(()=>console.log('SW registered'))
-    .catch(()=>console.log('SW failed'));
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(() => console.log("SW registered"))
+      .catch(err => console.log("SW failed", err));
+  });
 }
 </script>
 
