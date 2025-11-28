@@ -10,70 +10,45 @@
 </head>
 <body>
 
-<!-- CHỌN NGÀY + LOẠI SẦU RIÊNG -->
-<div class="card select-card">
-  <div class="select-line">
-    <input type="date" id="ngay">
-  </div>
-  <div class="select-line">
-    <select id="loaiSR">
-      <option value="Thai">Thái</option>
-      <option value="Ri">Ri</option>
-    </select>
-  </div>
-</div>
-
-<!-- TỔNG CỘNG -->
-<div class="card totals-card">
-  <h2>Tổng cộng</h2>
-  <div class="totals">
-    <div class="total-box">A<br><strong id="tongA">0</strong></div>
-    <div class="total-box">B<br><strong id="tongB">0</strong></div>
-    <div class="total-box">C<br><strong id="tongC">0</strong></div>
-  </div>
-  <div class="total-box total-all">Tổng<br><strong id="tongAll">0</strong></div>
-</div>
-
-<!-- NHẬP LIỆU -->
-<div class="card input-card">
-  <div class="hang-group">
-    <div class="hang-btn" data-h="A">A</div>
-    <div class="hang-btn" data-h="B">B</div>
-    <div class="hang-btn" data-h="C">C</div>
-  </div>
-  <input id="displaySL" disabled placeholder="Số lượng">
-
-  <!-- BÀN PHÍM SỐ -->
-  <div class="numpad">
-    <button class="num-btn">1</button>
-    <button class="num-btn">2</button>
-    <button class="num-btn">3</button>
-    <button class="num-btn">4</button>
-    <button class="num-btn">5</button>
-    <button class="num-btn">6</button>
-    <button class="num-btn">7</button>
-    <button class="num-btn">8</button>
-    <button class="num-btn">9</button>
-    <button class="num-btn" id="del">⌫</button>
-    <button class="num-btn">0</button>
-    <button class="num-btn" id="enter">↵</button>
-  </div>
-</div>
-
-<!-- LỊCH SỬ THU GỌN + NÚT XÓA TOÀN BỘ -->
-<div class="card history-card">
-  <h2>Lịch sử</h2>
-  <div id="lichSu" class="history-container"></div>
-  <button class="small-btn" id="xoaTat">XÓA DỮ LIỆU</button>
-</div>
-
-<script src="./app.js"></script>
 <script>
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js')
-    .then(()=>console.log('SW registered'))
-    .catch(()=>console.log('SW failed'));
+// Kiểm tra PWA
+function isStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 }
+
+if(!isStandalone()){
+  document.body.innerHTML = `
+    <div style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;text-align:center;padding:20px;">
+      <h1>Ứng dụng chỉ chạy khi thêm vào Màn hình chính</h1>
+      <p>Vui lòng mở Safari, nhấn nút Chia sẻ → Thêm vào Màn hình chính</p>
+    </div>`;
+  throw new Error("Not in PWA mode");
+}
+
+// Yêu cầu mật khẩu
+const APP_PASSWORD = "1234"; // Thay mật khẩu bạn muốn
+async function requirePassword(){
+  let ok = false;
+  while(!ok){
+    const pw = prompt("Nhập mật khẩu để mở ứng dụng:");
+    if(pw === null){
+      document.body.innerHTML = "<p>Bỏ qua, không mở app.</p>";
+      throw new Error("Cancelled by user");
+    }
+    if(pw === APP_PASSWORD){
+      ok = true;
+    } else alert("Mật khẩu sai, thử lại!");
+  }
+}
+
+requirePassword().then(()=>{ 
+  // Load phần app chính
+  document.write(`
+<div id="app-container"></div>
+<script src="./app.js"></script>
+`); 
+});
 </script>
+
 </body>
 </html>
