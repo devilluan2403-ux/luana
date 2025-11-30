@@ -1,61 +1,52 @@
-/* =============================
-   APP.JS — BẢN VIẾT LẠI HOÀN CHỈNH
-   ĐÃ ĐỒNG BỘ 100% VỚI index.html MỚI
-   ============================= */
+/* =======================================================
+   app.js — BẢN MỚI HOÀN TOÀN, ĐỒNG BỘ 100% VỚI index.html
+   ======================================================= */
 
-/* =============================
-   CHẶN SAFARI — CHỈ CHẠY PWA
-   ============================= */
+/* ========= CHẶN SAFARI (chỉ chạy khi là PWA) ========= */
 if (!window.matchMedia('(display-mode: standalone)').matches && !navigator.standalone) {
-  const pwaBlock = document.getElementById('notPwaMsg');
-  if (pwaBlock) pwaBlock.classList.remove('hidden');
+  const b = document.getElementById("notPwaMsg");
+  if (b) b.classList.remove("hidden");
 }
 
-
-/* =============================
-          CẤU HÌNH LƯU TRỮ
-   ============================= */
-const APP_PASSWORD = "minhluan";
-const LS_KEY     = "sr_records";
-const LS_CUST    = "sr_customer";
-const LS_PRICES  = "sr_prices";
-const LS_TOA     = "sr_toa";
+/* ========= LOCAL STORAGE KEYS ========= */
+const LS_RECORDS = "sr_records";
+const LS_CUSTOMER = "sr_customer";
+const LS_PRICES = "sr_prices";
+const LS_TOA = "sr_toa";
 const LS_INVNAME = "sr_invname";
+const APP_PASSWORD = "minhluan";
 
-let records  = JSON.parse(localStorage.getItem(LS_KEY)    || "[]");
-let customer = JSON.parse(localStorage.getItem(LS_CUST)   || "{}");
+let records  = JSON.parse(localStorage.getItem(LS_RECORDS) || "[]");
+let customer = JSON.parse(localStorage.getItem(LS_CUSTOMER) || "{}");
 let prices   = JSON.parse(localStorage.getItem(LS_PRICES) || "{}");
 
 let currentType = null;
 let currentCat  = null;
 let inputValue  = "";
 
-
-/* =============================
-                DOM
-   ============================= */
-// PASSWORD
+/* ========= DOM ========= */
+// password
 const pwScreen   = document.getElementById("passwordScreen");
 const pwInput    = document.getElementById("pwInput");
 const pwLoginBtn = document.getElementById("pwLoginBtn");
 
-// DATE
-const dateInput = document.getElementById("dateInput");
-const datePill  = document.getElementById("datePill");
-const historyDate = document.getElementById("historyDate");
+// date
+const dateInput  = document.getElementById("dateInput");
+const datePill   = document.getElementById("datePill");
+const historyDate= document.getElementById("historyDate");
 
-// TOA + TÊN KH
-const toaInput = document.getElementById("toaInput");
-const invoiceNameInput = document.getElementById("invoiceNameInput");
+// toa + tên KH
+const toaInput          = document.getElementById("toaInput");
+const invoiceNameInput  = document.getElementById("invoiceNameInput");
 
-// TYPE + CAT
+// type + cat
 const typeBtns = document.querySelectorAll(".type-btn");
 const catBtns  = document.querySelectorAll(".cat-btn");
 
-// DISPLAY
+// display
 const display = document.getElementById("display");
 
-// SUMMARY
+// summary
 const sumA = document.getElementById("sumA");
 const sumB = document.getElementById("sumB");
 const sumC = document.getElementById("sumC");
@@ -63,34 +54,31 @@ const sumD = document.getElementById("sumD");
 const sumK = document.getElementById("sumK");
 const totalAll = document.getElementById("totalAll");
 
-// HISTORY
+// history
 const historyTable = document.getElementById("historyTable");
 const historyBody  = document.getElementById("historyBody");
 const clearAllBtn  = document.getElementById("clearAll");
 const toggleBtn    = document.getElementById("toggleBtn");
 
-// PRICE
+// price
 const togglePriceBtn = document.getElementById("togglePriceBtn");
 const pricesRow      = document.getElementById("pricesRow");
 const priceInputs    = document.querySelectorAll(".price-input");
 
-// POPUP KHÁCH
-const custInfoBtn = document.getElementById("custInfoBtn");
-const custPopup   = document.getElementById("custPopup");
-const saveCustBtn = document.getElementById("saveCustBtn");
-const closeCustBtn= document.getElementById("closeCustBtn");
+// popup khách
+const custInfoBtn  = document.getElementById("custInfoBtn");
+const custPopup    = document.getElementById("custPopup");
+const saveCustBtn  = document.getElementById("saveCustBtn");
+const closeCustBtn = document.getElementById("closeCustBtn");
 
-// POPUP HÓA ĐƠN
-const exportInvBtn  = document.getElementById("exportInvBtn");
+// popup hóa đơn
+const exportInvBtn = document.getElementById("exportInvBtn");
 const invPopup      = document.getElementById("invPopup");
 const invoiceContent= document.getElementById("invoiceContent");
 const printInvBtn   = document.getElementById("printInvBtn");
 const closeInvBtn   = document.getElementById("closeInvBtn");
 
-
-/* =============================
-             PASSWORD
-   ============================= */
+/* ========= PASSWORD ========= */
 if (!localStorage.getItem("auth_ok")) pwScreen.classList.remove("hidden");
 
 pwLoginBtn.onclick = () => {
@@ -100,10 +88,7 @@ pwLoginBtn.onclick = () => {
   } else alert("Sai mật khẩu!");
 };
 
-
-/* =============================
-             FORMAT
-   ============================= */
+/* ========= FORMAT ========= */
 const fmt = n => Number(n).toLocaleString("vi-VN");
 
 const toLocalISO = d => new Date(d.getTime() - d.getTimezoneOffset()*60000)
@@ -114,10 +99,7 @@ const fDate = d => {
   return `Ngày ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
 };
 
-
-/* =============================
-              NGÀY
-   ============================= */
+/* ========= NGÀY ========= */
 dateInput.value = toLocalISO(new Date());
 datePill.textContent = fDate(dateInput.value);
 historyDate.textContent = fDate(dateInput.value);
@@ -129,95 +111,74 @@ dateInput.addEventListener("change", () => {
   renderHistory();
 });
 
-
-/* =============================
-            TYPE BTN
-   ============================= */
+/* ========= TYPE (THÁI / RI) ========= */
 typeBtns.forEach(btn => {
-  btn.addEventListener("click", () => {
-    typeBtns.forEach(x => x.classList.remove("active"));
+  btn.onclick = () => {
+    typeBtns.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     currentType = btn.dataset.type;
     renderSummary();
     renderHistory();
-  });
+  };
 });
 
-
-/* =============================
-            CAT BTN
-   ============================= */
+/* ========= CAT (A–K) ========= */
 catBtns.forEach(btn => {
-  btn.addEventListener("click", () => {
-    catBtns.forEach(x => x.classList.remove("active"));
+  btn.onclick = () => {
+    catBtns.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     currentCat = btn.dataset.cat;
-  });
+  };
 });
 
-
-/* =============================
-             KEYPAD
-   ============================= */
+/* ========= KEYPAD ========= */
 document.querySelectorAll(".num").forEach(btn => {
-  btn.addEventListener("click", () => {
-    if (!currentType || !currentCat) {
-      alert("Vui lòng chọn THÁI/RI và A/B/C/D/K!");
-      return;
-    }
+  btn.onclick = () => {
+    if (!currentType || !currentCat) return alert("Chọn THÁI/RI và loại A/B/C/D/K!");
     inputValue += btn.textContent;
     updateDisplay();
-  });
+  };
 });
 
 document.getElementById("btnBack").onclick = () => {
-  inputValue = inputValue.slice(0, -1);
+  inputValue = inputValue.slice(0,-1);
   updateDisplay();
 };
 
 document.getElementById("btnEnter").onclick = () => {
   if (!inputValue || !currentType || !currentCat) return;
 
-  const rec = {
+  records.push({
     id: Date.now(),
     date: dateInput.value,
     type: currentType,
     cat: currentCat,
     qty: Number(inputValue)
-  };
-
-  records.push(rec);
-  localStorage.setItem(LS_KEY, JSON.stringify(records));
-
+  });
+  localStorage.setItem(LS_RECORDS, JSON.stringify(records));
   inputValue = "";
   updateDisplay();
   renderSummary();
   renderHistory();
 };
 
-
-/* =============================
-            DISPLAY
-   ============================= */
-function updateDisplay() {
-  if (!inputValue) {
+/* ========= DISPLAY ========= */
+function updateDisplay(){
+  if (!inputValue){
     display.textContent = "SỐ LƯỢNG";
-    display.style.color = "#cfcfcf";
+    display.style.color = "#ccc";
   } else {
     display.textContent = fmt(inputValue);
     display.style.color = "#111";
   }
 }
 
-
-/* =============================
-          SUMMARY (A–K)
-   ============================= */
-function renderSummary() {
-  let S = { A:0, B:0, C:0, D:0, K:0 };
+/* ========= SUMMARY ========= */
+function renderSummary(){
+  let S = {A:0, B:0, C:0, D:0, K:0};
 
   records.forEach(r => {
-    if (r.type === currentType && r.date === dateInput.value) {
+    if (r.type === currentType && r.date === dateInput.value){
       S[r.cat] += r.qty;
     }
   });
@@ -228,28 +189,24 @@ function renderSummary() {
   sumD.textContent = fmt(S.D);
   sumK.textContent = fmt(S.K);
 
-  totalAll.textContent = fmt(S.A + S.B + S.C + S.D + S.K);
+  totalAll.textContent = fmt(S.A+S.B+S.C+S.D+S.K);
 }
 
-
-/* =============================
-             HISTORY
-   ============================= */
-function makeCell(item) {
+/* ========= HISTORY ========= */
+function makeCell(item){
   const td = document.createElement("td");
-  if (item) {
+  if (item){
     td.textContent = fmt(item.qty);
     const del = document.createElement("span");
     del.textContent = " X";
     del.className = "del-btn";
     del.onclick = () => deleteRecord(item.id);
-    td.appendChild(del);
+
   }
   return td;
-
 }
 
-function renderHistory() {
+function renderHistory(){
   historyTable.innerHTML = "";
   if (!currentType) return;
 
@@ -267,7 +224,7 @@ function renderHistory() {
 
   const maxRows = Math.max(col.A.length, col.B.length, col.C.length, col.D.length, col.K.length);
 
-  for (let i=0; i<maxRows; i++) {
+  for (let i=0; i<maxRows; i++){
     const tr = document.createElement("tr");
     tr.appendChild(makeCell(col.A[i]));
     tr.appendChild(makeCell(col.B[i]));
@@ -278,17 +235,17 @@ function renderHistory() {
   }
 }
 
-function deleteRecord(id) {
+function deleteRecord(id){
   records = records.filter(r => r.id !== id);
-  localStorage.setItem(LS_KEY, JSON.stringify(records));
+  localStorage.setItem(LS_RECORDS, JSON.stringify(records));
   renderSummary();
   renderHistory();
 }
 
 clearAllBtn.onclick = () => {
-  if (confirm("Xóa toàn bộ dữ liệu ngày này?")) {
+  if (confirm("Xóa toàn bộ dữ liệu ngày này?")){
     records = records.filter(r => r.date !== dateInput.value);
-    localStorage.setItem(LS_KEY, JSON.stringify(records));
+    localStorage.setItem(LS_RECORDS, JSON.stringify(records));
     renderSummary();
     renderHistory();
   }
@@ -299,9 +256,7 @@ toggleBtn.onclick = () => {
   toggleBtn.textContent = historyBody.classList.contains("hidden") ? "HIỆN" : "ẨN";
 };
 
-/* =============================
-      POPUP THÔNG TIN KHÁCH
-   ============================= */
+/* ========= POPUP KHÁCH ========= */
 custInfoBtn.onclick = () => {
   document.getElementById("cust_name").value   = customer.name   || "";
   document.getElementById("cust_phone").value  = customer.phone  || "";
@@ -320,14 +275,12 @@ saveCustBtn.onclick = () => {
     tkname : document.getElementById("cust_tkname").value,
     bank   : document.getElementById("cust_bank").value
   };
-  localStorage.setItem(LS_CUST, JSON.stringify(customer));
+  localStorage.setItem(LS_CUSTOMER, JSON.stringify(customer));
   custPopup.classList.add("hidden");
   alert("Đã lưu thông tin khách hàng!");
 };
 
-/* =============================
-           ĐƠN GIÁ
-   ============================= */
+/* ========= ĐƠN GIÁ ========= */
 togglePriceBtn.onclick = () => {
   pricesRow.classList.toggle("hidden");
 };
@@ -340,16 +293,14 @@ priceInputs.forEach(inp => {
   };
 });
 
-/* =============================
-           HÓA ĐƠN
-   ============================= */
+/* ========= HÓA ĐƠN ========= */
 exportInvBtn.onclick = () => {
   if (!currentType) return alert("Chọn THÁI hoặc RI trước!");
 
   const date = dateInput.value;
   const list = records.filter(r => r.type === currentType && r.date === date);
 
-  const sums = { A:0, B:0, C:0, D:0, K:0 };
+  const sums = {A:0,B:0,C:0,D:0,K:0};
   list.forEach(r => sums[r.cat] += r.qty);
 
   const toa = toaInput.value;
@@ -357,7 +308,7 @@ exportInvBtn.onclick = () => {
 
   let html = `
     <div style="padding:12px; font-family:Arial;">
-      <h2 style="text-align:center;">HÓA ĐƠN MUA BÁN</h2>
+      <h2 style="text-align:center;">HÓA ĐƠN</h2>
       <div>Ngày: ${fDate(date)}</div>
       <div>Toa số: ${toa}</div>
       <div>Tên KH: ${invName}</div>
@@ -365,13 +316,12 @@ exportInvBtn.onclick = () => {
         <thead>
           <tr>
             <th style="border:1px solid #333; padding:6px;">Loại</th>
-            <th style="border:1px solid #333; padding:6px;">Số lượng</th>
-            <th style="border:1px solid #333; padding:6px;">Đơn giá</th>
+            <th style="border:1px solid #333; padding:6px;">SL</th>
+            <th style="border:1px solid #333; padding:6px;">Giá</th>
             <th style="border:1px solid #333; padding:6px;">Thành tiền</th>
           </tr>
         </thead>
-        <tbody>
-  `;
+        <tbody>`;
 
   let total = 0;
   ["A","B","C","D","K"].forEach(cat => {
@@ -386,21 +336,16 @@ exportInvBtn.onclick = () => {
         <td style="border:1px solid #333; padding:6px; text-align:right;">${fmt(qty)}</td>
         <td style="border:1px solid #333; padding:6px; text-align:right;">${fmt(price)}</td>
         <td style="border:1px solid #333; padding:6px; text-align:right;">${fmt(amt)}</td>
-      </tr>
-    `;
+      </tr>`;
   });
 
-  html += `
-        </tbody>
-      </table>
+  html += `</tbody></table>
       <h3 style="text-align:right; margin-top:10px;">Tổng cộng: ${fmt(total)}</h3>
-
       <div style="margin-top:10px;">Thông tin khách:</div>
       <div>Tên: ${customer.name || ""}</div>
       <div>SĐT: ${customer.phone || ""}</div>
       <div>STK: ${customer.stk || ""} - ${customer.tkname || ""} (${customer.bank || ""})</div>
-    </div>
-  `;
+    </div>`;
 
   invoiceContent.innerHTML = html;
   invPopup.classList.remove("hidden");
@@ -409,10 +354,8 @@ exportInvBtn.onclick = () => {
 closeInvBtn.onclick = () => invPopup.classList.add("hidden");
 printInvBtn.onclick = () => window.print();
 
-/* =============================
-              INIT
-   ============================= */
-function init() {
+/* ========= INIT ========= */
+function init(){
   toaInput.value = localStorage.getItem(LS_TOA) || "";
   invoiceNameInput.value = localStorage.getItem(LS_INVNAME) || "";
 
@@ -423,5 +366,4 @@ function init() {
   renderSummary();
   renderHistory();
 }
-
 init();
