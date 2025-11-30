@@ -1,43 +1,46 @@
 /* =======================================================
-   app.js — BẢN MỚI HOÀN TOÀN, ĐỒNG BỘ 100% VỚI index.html
+   app.js — Full, đồng bộ với index.html (Customer Manager)
    ======================================================= */
 
-/* ========= CHẶN SAFARI (chỉ chạy khi là PWA) ========= */
+/* ===== PWA BLOCK (chỉ khi không chạy standalone) ===== */
 if (!window.matchMedia('(display-mode: standalone)').matches && !navigator.standalone) {
   const b = document.getElementById("notPwaMsg");
   if (b) b.classList.remove("hidden");
 }
 
-/* ========= LOCAL STORAGE KEYS ========= */
-const LS_RECORDS = "sr_records";
-const LS_CUSTOMER = "sr_customer";
-const LS_PRICES = "sr_prices";
-const LS_TOA = "sr_toa";
-const LS_INVNAME = "sr_invname";
+/* ===== LOCAL STORAGE KEYS ===== */
+const LS_RECORDS   = "sr_records";
+const LS_CUSTOMER  = "sr_customer";   // last edited customer
+const LS_CUST_LIST = "sr_cust_list";  // list of customers
+const LS_PRICES    = "sr_prices";
+const LS_TOA       = "sr_toa";
+const LS_INVNAME   = "sr_invname";
 const APP_PASSWORD = "minhluan";
 
-let records  = JSON.parse(localStorage.getItem(LS_RECORDS) || "[]");
-let customer = JSON.parse(localStorage.getItem(LS_CUSTOMER) || "{}");
-let prices   = JSON.parse(localStorage.getItem(LS_PRICES) || "{}");
+/* ===== IN-MEM ===== */
+let records  = JSON.parse(localStorage.getItem(LS_RECORDS)   || "[]");
+let customer = JSON.parse(localStorage.getItem(LS_CUSTOMER)  || "{}");
+let custList = JSON.parse(localStorage.getItem(LS_CUST_LIST) || "[]");
+let prices   = JSON.parse(localStorage.getItem(LS_PRICES)    || "{}");
 
 let currentType = null;
 let currentCat  = null;
 let inputValue  = "";
 
-/* ========= DOM ========= */
+/* ===== DOM ===== */
 // password
 const pwScreen   = document.getElementById("passwordScreen");
 const pwInput    = document.getElementById("pwInput");
 const pwLoginBtn = document.getElementById("pwLoginBtn");
 
 // date
-const dateInput  = document.getElementById("dateInput");
-const datePill   = document.getElementById("datePill");
-const historyDate= document.getElementById("historyDate");
+const dateInput   = document.getElementById("dateInput");
+const datePill    = document.getElementById("datePill");
+const historyDate = document.getElementById("historyDate");
 
-// toa + tên KH
-const toaInput          = document.getElementById("toaInput");
-const invoiceNameInput  = document.getElementById("invoiceNameInput");
+// toa + invoice name
+const toaInput         = document.getElementById("toaInput");
+const invoiceNameInput = document.getElementById("invoiceNameInput");
 
 // type + cat
 const typeBtns = document.querySelectorAll(".type-btn");
@@ -66,19 +69,26 @@ const pricesRow      = document.getElementById("pricesRow");
 const priceInputs    = document.querySelectorAll(".price-input");
 
 // popup khách
-const custInfoBtn  = document.getElementById("custInfoBtn");
-const custPopup    = document.getElementById("custPopup");
-const saveCustBtn  = document.getElementById("saveCustBtn");
-const closeCustBtn = document.getElementById("closeCustBtn");
+const custInfoBtn    = document.getElementById("custInfoBtn");
+const custPopup      = document.getElementById("custPopup");
+const saveCustBtn    = document.getElementById("saveCustBtn");
+const closeCustBtn   = document.getElementById("closeCustBtn");
+
+// customer list popup
+const custListBtn      = document.getElementById("custListBtn");
+const custListPopup    = document.getElementById("custListPopup");
+const closeCustListBtn = document.getElementById("closeCustListBtn");
+const searchCust       = document.getElementById("searchCust");
+const custListBox      = document.getElementById("custListBox");
 
 // popup hóa đơn
-const exportInvBtn = document.getElementById("exportInvBtn");
+const exportInvBtn  = document.getElementById("exportInvBtn");
 const invPopup      = document.getElementById("invPopup");
 const invoiceContent= document.getElementById("invoiceContent");
 const printInvBtn   = document.getElementById("printInvBtn");
 const closeInvBtn   = document.getElementById("closeInvBtn");
 
-/* ========= PASSWORD ========= */
+/* ===== PASSWORD ===== */
 if (!localStorage.getItem("auth_ok")) pwScreen.classList.remove("hidden");
 
 pwLoginBtn.onclick = () => {
@@ -88,22 +98,17 @@ pwLoginBtn.onclick = () => {
   } else alert("Sai mật khẩu!");
 };
 
-/* ========= FORMAT ========= */
+/* ===== HELPERS ===== */
 const fmt = n => Number(n).toLocaleString("vi-VN");
+const toLocalISO = d => new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+const fDate = d => { d = new Date(d); return `Ngày ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`; };
 
-const toLocalISO = d => new Date(d.getTime() - d.getTimezoneOffset()*60000)
-  .toISOString().slice(0,10);
-
-const fDate = d => {
-  d = new Date(d);
-  return `Ngày ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
-};
-
-/* ========= NGÀY ========= */
+/* ===== INIT DATE ===== */
 dateInput.value = toLocalISO(new Date());
 datePill.textContent = fDate(dateInput.value);
 historyDate.textContent = fDate(dateInput.value);
 
+/* ===== DATE CHANGE ===== */
 dateInput.addEventListener("change", () => {
   datePill.textContent = fDate(dateInput.value);
   historyDate.textContent = fDate(dateInput.value);
@@ -111,7 +116,7 @@ dateInput.addEventListener("change", () => {
   renderHistory();
 });
 
-/* ========= TYPE (THÁI / RI) ========= */
+/* ===== TYPE BTN ===== */
 typeBtns.forEach(btn => {
   btn.onclick = () => {
     typeBtns.forEach(b => b.classList.remove("active"));
@@ -122,7 +127,7 @@ typeBtns.forEach(btn => {
   };
 });
 
-/* ========= CAT (A–K) ========= */
+/* ===== CAT BTN ===== */
 catBtns.forEach(btn => {
   btn.onclick = () => {
     catBtns.forEach(b => b.classList.remove("active"));
@@ -131,7 +136,7 @@ catBtns.forEach(btn => {
   };
 });
 
-/* ========= KEYPAD ========= */
+/* ===== KEYPAD ===== */
 document.querySelectorAll(".num").forEach(btn => {
   btn.onclick = () => {
     if (!currentType || !currentCat) return alert("Chọn THÁI/RI và loại A/B/C/D/K!");
@@ -148,9 +153,11 @@ document.getElementById("btnBack").onclick = () => {
 document.getElementById("btnEnter").onclick = () => {
   if (!inputValue || !currentType || !currentCat) return;
 
+  // push record with customer name included
   records.push({
     id: Date.now(),
     date: dateInput.value,
+    customer: invoiceNameInput.value || "",
     type: currentType,
     cat: currentCat,
     qty: Number(inputValue)
@@ -162,7 +169,7 @@ document.getElementById("btnEnter").onclick = () => {
   renderHistory();
 };
 
-/* ========= DISPLAY ========= */
+/* ===== DISPLAY ===== */
 function updateDisplay(){
   if (!inputValue){
     display.textContent = "SỐ LƯỢNG";
@@ -173,12 +180,17 @@ function updateDisplay(){
   }
 }
 
-/* ========= SUMMARY ========= */
+/* ===== SUMMARY (lọc theo type + date + customer) ===== */
 function renderSummary(){
   let S = {A:0, B:0, C:0, D:0, K:0};
+  const custName = invoiceNameInput.value || "";
 
   records.forEach(r => {
-    if (r.type === currentType && r.date === dateInput.value){
+    if (
+      r.type === currentType &&
+      r.date === dateInput.value &&
+      r.customer === custName
+    ){
       S[r.cat] += r.qty;
     }
   });
@@ -192,7 +204,7 @@ function renderSummary(){
   totalAll.textContent = fmt(S.A+S.B+S.C+S.D+S.K);
 }
 
-/* ========= HISTORY ========= */
+/* ===== HISTORY ===== */
 function makeCell(item){
   const td = document.createElement("td");
   if (item){
@@ -201,7 +213,7 @@ function makeCell(item){
     del.textContent = " X";
     del.className = "del-btn";
     del.onclick = () => deleteRecord(item.id);
-
+    td.appendChild(del);
   }
   return td;
 }
@@ -209,9 +221,10 @@ function makeCell(item){
 function renderHistory(){
   historyTable.innerHTML = "";
   if (!currentType) return;
+  const custName = invoiceNameInput.value || "";
 
   const list = records
-    .filter(r => r.type === currentType && r.date === dateInput.value)
+    .filter(r => r.type === currentType && r.date === dateInput.value && r.customer === custName)
     .sort((a,b) => b.id - a.id);
 
   const col = {
@@ -242,9 +255,11 @@ function deleteRecord(id){
   renderHistory();
 }
 
+/* ===== CLEAR ALL / TOGGLE HISTORY ===== */
 clearAllBtn.onclick = () => {
   if (confirm("Xóa toàn bộ dữ liệu ngày này?")){
-    records = records.filter(r => r.date !== dateInput.value);
+    const custName = invoiceNameInput.value || "";
+    records = records.filter(r => !(r.date === dateInput.value && r.customer === custName));
     localStorage.setItem(LS_RECORDS, JSON.stringify(records));
     renderSummary();
     renderHistory();
@@ -256,7 +271,7 @@ toggleBtn.onclick = () => {
   toggleBtn.textContent = historyBody.classList.contains("hidden") ? "HIỆN" : "ẨN";
 };
 
-/* ========= POPUP KHÁCH ========= */
+/* ===== POPUP KHÁCH (lưu customer + thêm vào custList nếu mới) ===== */
 custInfoBtn.onclick = () => {
   document.getElementById("cust_name").value   = customer.name   || "";
   document.getElementById("cust_phone").value  = customer.phone  || "";
@@ -276,15 +291,58 @@ saveCustBtn.onclick = () => {
     bank   : document.getElementById("cust_bank").value
   };
   localStorage.setItem(LS_CUSTOMER, JSON.stringify(customer));
+
+  // thêm vào danh sách khách nếu chưa có
+  if (customer.name && !custList.some(c => c.name === customer.name)) {
+    custList.push({
+      name: customer.name,
+      phone: customer.phone,
+      stk: customer.stk,
+      tkname: customer.tkname,
+      bank: customer.bank,
+      lastDate: dateInput.value
+    });
+    localStorage.setItem(LS_CUST_LIST, JSON.stringify(custList));
+  }
+
   custPopup.classList.add("hidden");
   alert("Đã lưu thông tin khách hàng!");
 };
 
-/* ========= ĐƠN GIÁ ========= */
-togglePriceBtn.onclick = () => {
-  pricesRow.classList.toggle("hidden");
+/* ===== CUST LIST POPUP ===== */
+custListBtn.onclick = () => {
+  renderCustomerList();
+  custListPopup.classList.remove("hidden");
 };
+closeCustListBtn.onclick = () => custListPopup.classList.add("hidden");
+searchCust.oninput = (e) => { renderCustomerList(e.target.value); };
 
+function renderCustomerList(keyword = ""){
+  custListBox.innerHTML = "";
+  const kw = (keyword || "").toLowerCase();
+
+  custList
+    .filter(c => c.name && c.name.toLowerCase().includes(kw))
+    .sort((a,b) => a.name.localeCompare(b.name))
+    .forEach(c => {
+      const div = document.createElement("div");
+      div.style.padding = "10px";
+      div.style.borderBottom = "1px solid #eee";
+      div.style.cursor = "pointer";
+      div.innerHTML = `<b>${c.name}</b><br><small>${c.phone || ""} — ${c.bank || ""}</small>`;
+      div.onclick = () => {
+        invoiceNameInput.value = c.name;
+        localStorage.setItem(LS_INVNAME, c.name);
+        custListPopup.classList.add("hidden");
+        renderSummary();
+        renderHistory();
+      };
+      custListBox.appendChild(div);
+    });
+}
+
+/* ===== PRICES (toggle & save) ===== */
+togglePriceBtn.onclick = () => { pricesRow.classList.toggle("hidden"); };
 priceInputs.forEach(inp => {
   inp.value = prices[inp.dataset.cat] || "";
   inp.onchange = () => {
@@ -293,12 +351,13 @@ priceInputs.forEach(inp => {
   };
 });
 
-/* ========= HÓA ĐƠN ========= */
+/* ===== HÓA ĐƠN (xuất theo khách + ngày) ===== */
 exportInvBtn.onclick = () => {
   if (!currentType) return alert("Chọn THÁI hoặc RI trước!");
 
   const date = dateInput.value;
-  const list = records.filter(r => r.type === currentType && r.date === date);
+  const custName = invoiceNameInput.value || "";
+  const list = records.filter(r => r.type === currentType && r.date === date && r.customer === custName);
 
   const sums = {A:0,B:0,C:0,D:0,K:0};
   list.forEach(r => sums[r.cat] += r.qty);
@@ -325,7 +384,7 @@ exportInvBtn.onclick = () => {
 
   let total = 0;
   ["A","B","C","D","K"].forEach(cat => {
-    const qty = sums[cat];
+    const qty = sums[cat] || 0;
     const price = prices[cat] || 0;
     const amt = qty * price;
     total += amt;
@@ -354,11 +413,16 @@ exportInvBtn.onclick = () => {
 closeInvBtn.onclick = () => invPopup.classList.add("hidden");
 printInvBtn.onclick = () => window.print();
 
-/* ========= INIT ========= */
+/* ===== INIT ===== */
 function init(){
+  // load last saved states
   toaInput.value = localStorage.getItem(LS_TOA) || "";
   invoiceNameInput.value = localStorage.getItem(LS_INVNAME) || "";
+  customer = JSON.parse(localStorage.getItem(LS_CUSTOMER) || "{}");
+  custList = JSON.parse(localStorage.getItem(LS_CUST_LIST) || "[]");
+  prices = JSON.parse(localStorage.getItem(LS_PRICES) || "{}");
 
+  // events to persist invoice name / toa
   toaInput.onchange = () => localStorage.setItem(LS_TOA, toaInput.value);
   invoiceNameInput.onchange = () => localStorage.setItem(LS_INVNAME, invoiceNameInput.value);
 
