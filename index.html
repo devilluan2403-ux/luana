@@ -1,64 +1,121 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <title>Ghi cân</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <link rel="manifest" href="./manifest.json">
-  <link rel="apple-touch-icon" href="./icons/icon-192.png">
-  <link rel="stylesheet" href="./style.css">
+  <!-- BẮT BUỘC CHO iPHONE -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
-  <meta name="theme-color" content="#008f39" />
+  <title>Ghi Số Sầu Riêng</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Icon chuẩn iOS -->
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+
+  <!-- manifest -->
+  <link rel="manifest" href="manifest.json">
 </head>
 <body>
 
-<div id="app"></div>
-<script src="./app.js"></script>
+<!-- MÀN HÌNH NHẬP MẬT KHẨU -->
+<div id="passwordScreen" class="pw-screen hidden">
+  <div class="pw-box">
+    <h2>Nhập mật khẩu</h2>
+    <input id="pwInput" type="password" maxlength="20" placeholder="Nhập mật khẩu" />
+    <button id="pwLoginBtn">Mở ứng dụng</button>
+  </div>
+</div>
 
-<script>
-function isStandalone(){
-  return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
-}
+<main class="screen">
 
-if(!isStandalone()){
-  document.body.innerHTML = `
-    <div style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;text-align:center;padding:20px;">
-      <h2>⚠ Ứng dụng chỉ chạy khi thêm vào Màn hình chính</h2>
-      <p>Mở Safari → Chia sẻ → Thêm vào Màn hình chính</p>
-    </div>`;
-} else {
-  const APP_PASSWORD = "devilluan";
+  <!-- NGÀY + THÁI/RI -->
+  <section class="card card-top">
 
-  if (localStorage.getItem("authenticated") === "true") {
-    initApp();
-  } else {
-    (async function () {
-      let ok = false;
-      while (!ok) {
-        const pw = prompt("Nhập mật khẩu để mở ứng dụng:");
-        if (pw === null) {
-          document.body.innerHTML = "<p>Đã thoát ứng dụng.</p>";
-          return;
-        }
-        if (pw === APP_PASSWORD) {
-          ok = true;
-          localStorage.setItem("authenticated", "true");
-        } else alert("Mật khẩu sai, thử lại!");
-      }
-      initApp();
-    })();
-  }
-}
+    <div class="date-wrapper">
+      <div class="date-pill" id="datePill"></div>
+      <input id="dateInput" type="date" class="date-input-real" />
+    </div>
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js")
-      .then(() => console.log("SW registered"))
-      .catch(err => console.log("SW failed", err));
-  });
-}
-</script>
+    <div class="select-row">
+      <button class="btn-select type-btn" data-type="thai">THÁI</button>
+      <button class="btn-select type-btn" data-type="ri">RI</button>
+    </div>
+  </section>
 
+  <!-- TỔNG -->
+  <section class="card card-totals">
+    <div class="totals-row">
+      <div class="total-pill"><div class="label">A</div><div class="value" id="sumA">0</div></div>
+      <div class="total-pill"><div class="label">B</div><div class="value" id="sumB">0</div></div>
+      <div class="total-pill"><div class="label">C</div><div class="value" id="sumC">0</div></div>
+    </div>
+
+    <div class="grand-pill">
+      <div class="label">Tổng</div>
+      <div class="value" id="totalAll">0</div>
+    </div>
+  </section>
+
+  <!-- CHỌN A/B/C + DISPLAY -->
+  <section class="card card-input">
+    <div class="select-row">
+      <button class="btn-select cat-btn" data-cat="A">A</button>
+      <button class="btn-select cat-btn" data-cat="B">B</button>
+      <button class="btn-select cat-btn" data-cat="C">C</button>
+    </div>
+
+    <div class="display-slab" id="display">SỐ LƯỢNG</div>
+  </section>
+
+  <!-- KEYPAD -->
+  <nav class="keypad">
+    <button class="kbtn num">1</button>
+    <button class="kbtn num">2</button>
+    <button class="kbtn num">3</button>
+    <button class="kbtn num">4</button>
+    <button class="kbtn num">5</button>
+    <button class="kbtn num">6</button>
+    <button class="kbtn num">7</button>
+    <button class="kbtn num">8</button>
+    <button class="kbtn num">9</button>
+    <button class="kbtn action" id="btnBack">⌫</button>
+    <button class="kbtn num">0</button>
+    <button class="kbtn action" id="btnEnter">↵</button>
+  </nav>
+
+  <!-- LỊCH SỬ -->
+  <section class="card card-history">
+    <header class="history-header">
+      <div class="top-history-title">
+        <div class="hist-title">LỊCH SỬ NHẬP</div>
+        <div id="historyDate">Ngày …</div>
+      </div>
+
+      <div class="history-actions">
+        <button id="clearAll" class="small-btn">XÓA DỮ LIỆU</button>
+        <button id="toggleBtn" class="small-btn">ẨN</button>
+      </div>
+    </header>
+
+    <div class="history-body" id="historyBody">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>A</th>
+            <th>B</th>
+            <th>C</th>
+          </tr>
+        </thead>
+        <tbody id="historyTable"></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<script src="app.js"></script>
 </body>
 </html>
