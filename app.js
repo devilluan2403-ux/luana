@@ -1,203 +1,286 @@
-function initApp() {
-  const KEY = "ghi_sau_rieng_v15";
+/* =========================================
+        CHẶN SAFARI - CHỈ CHẠY PWA
+   ========================================= */
+if (!window.matchMedia('(display-mode: standalone)').matches &&
+    !navigator.standalone) {
+    document.body.innerHTML = `
+        <div style="padding:20px; font-size:22px; text-align:center;">
+            Ứng dụng chỉ hoạt động khi được thêm vào Màn hình chính.<br><br>
+            Chân thành cảm ơn.
+        </div>
+    `;
+}
 
-  const app = document.createElement("div");
-  app.id = "app-container";
-  document.body.appendChild(app);
+/* =========================================
+                 MẬT KHẨU
+   ========================================= */
 
-  app.innerHTML = `
-  <div class="card select-card">
-    <div class="select-line"><input type="date" id="ngay"></div>
-    <div class="select-line">
-      <select id="loaiSR">
-        <option value="Thai">Thái</option>
-        <option value="Ri">Ri</option>
-      </select>
-    </div>
-  </div>
+const APP_PASSWORD = "minhluan";
 
-  <div class="card totals-card">
-    <div class="totals">
-      <div class="total-box">A<br><strong id="tongA">0</strong></div>
-      <div class="total-box">B<br><strong id="tongB">0</strong></div>
-      <div class="total-box">C<br><strong id="tongC">0</strong></div>
-    </div>
-    <div class="total-box total-all">Tổng<br><strong id="tongAll">0</strong></div>
-  </div>
+const pwScreen   = document.getElementById("passwordScreen");
+const pwInput    = document.getElementById("pwInput");
+const pwLoginBtn = document.getElementById("pwLoginBtn");
 
-  <div class="card input-card">
-    <div class="hang-group">
-      <div class="hang-btn" data-h="A">A</div>
-      <div class="hang-btn" data-h="B">B</div>
-      <div class="hang-btn" data-h="C">C</div>
-    </div>
-    <input id="displaySL" disabled placeholder="Số lượng">
-    <div class="numpad">
-      <button class="num-btn">1</button>
-      <button class="num-btn">2</button>
-      <button class="num-btn">3</button>
-      <button class="num-btn">4</button>
-      <button class="num-btn">5</button>
-      <button class="num-btn">6</button>
-      <button class="num-btn">7</button>
-      <button class="num-btn">8</button>
-      <button class="num-btn">9</button>
-      <button class="num-btn" id="del">⌫</button>
-      <button class="num-btn">0</button>
-      <button class="num-btn" id="enter">↵</button>
-    </div>
-  </div>
+// Nếu chưa xác nhận lần đầu → yêu cầu nhập 1 lần
+if (!localStorage.getItem("auth_ok")) {
+    pwScreen.classList.remove("hidden");
+}
 
-  <div class="card history-card">
-    <h2>Lịch sử</h2>
-    <div id="lichSu" class="history-container"></div>
-    <button class="small-btn" id="xoaTat">XÓA DỮ LIỆU</button>
-  </div>
-  `;
-
-  const ngayEl = document.getElementById("ngay");
-  const loaiSREl = document.getElementById("loaiSR");
-  const displayEl = document.getElementById("displaySL");
-  const btnXoa = document.getElementById("xoaTat");
-
-  ngayEl.value = new Date().toISOString().split("T")[0];
-  let hang = null, soLuong = "";
-
-  function load() { return JSON.parse(localStorage.getItem(KEY) || "{}"); }
-  function save(d) { localStorage.setItem(KEY, JSON.stringify(d)); }
-
-  document.querySelectorAll(".hang-btn").forEach(btn => {
-    btn.onclick = () => {
-      document.querySelectorAll(".hang-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      hang = btn.dataset.h;
-    };
-  });
-
-  function formatNum(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
-
-  document.querySelectorAll(".num-btn").forEach(btn => {
-    btn.onclick = () => {
-      const v = btn.textContent;
-      if (btn.id === "del") soLuong = soLuong.slice(0, -1);
-      else if (btn.id === "enter") submitData();
-      else if (soLuong.length < 6) soLuong += v;
-      displayEl.value = soLuong ? formatNum(soLuong) : "";
-    };
-  });
-
-  function submitData() {
-    if (!hang) return alert("Chọn loại hàng");
-    if (!soLuong) return alert("Nhập số lượng");
-
-    const d = load();
-    const ngay = ngayEl.value;
-    const loaiSR = loaiSREl.value;
-
-    if (!d[ngay]) d[ngay] = [];
-    d[ngay].push({ loaiSR, hang, soLuong: Number(soLuong) });
-
-    save(d);
-    soLuong = "";
-    displayEl.value = "";
-    render();
-  }
-
-  btnXoa.onclick = () => {
-    if (confirm("Xóa toàn bộ dữ liệu?")) {
-      localStorage.removeItem(KEY);
-      render();
+pwLoginBtn.addEventListener("click", ()=>{
+    if (pwInput.value.trim() === APP_PASSWORD) {
+        localStorage.setItem("auth_ok", "1");
+        pwScreen.classList.add("hidden");
+    } else {
+        alert("Sai mật khẩu!");
     }
+});
+
+
+/* =========================================
+                GHI SỐ - CHÍNH
+   ========================================= */
+
+const LS_KEY = "sr_records";
+let records = JSON.parse(localStorage.getItem(LS_KEY) || "[]");
+
+let currentType = null;
+let currentCat  = null;
+let inputValue  = "";
+
+// ELEMENTS
+const dateInput = document.getElementById("dateInput");
+const datePill  = document.getElementById("datePill");
+const typeBtns  = document.querySelectorAll(".type-btn");
+const catBtns   = document.querySelectorAll(".cat-btn");
+const display   = document.getElementById("display");
+
+const sumA = document.getElementById("sumA");
+const sumB = document.getElementById("sumB");
+const sumC = document.getElementById("sumC");
+const totalAll = document.getElementById("totalAll");
+
+const historyTable = document.getElementById("historyTable");
+const historyBody  = document.getElementById("historyBody");
+const toggleBtn    = document.getElementById("toggleBtn");
+const clearAllBtn  = document.getElementById("clearAll");
+const historyDate  = document.getElementById("historyDate");
+
+
+/* FORMAT */
+function fmt(n){
+  return n.toLocaleString('vi-VN');
+}
+
+
+/* NGÀY */
+function toLocalISO(d){
+  return new Date(d.getTime() - d.getTimezoneOffset()*60000)
+        .toISOString().slice(0,10);
+}
+
+dateInput.value = toLocalISO(new Date());
+
+function fDate(d){
+  d = new Date(d);
+  return `Ngày ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+}
+
+datePill.textContent = fDate(dateInput.value);
+historyDate.textContent = fDate(dateInput.value);
+
+dateInput.addEventListener("change", ()=>{
+  datePill.textContent = fDate(dateInput.value);
+  historyDate.textContent = fDate(dateInput.value);
+});
+
+
+/* LOẠI THÁI / RI */
+typeBtns.forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    typeBtns.forEach(x=>x.classList.remove("active"));
+    btn.classList.add("active");
+
+    currentType = btn.dataset.type;
+
+    renderSummary();
+    renderHistory();
+  });
+});
+
+
+/* A / B / C */
+catBtns.forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    catBtns.forEach(x=>x.classList.remove("active"));
+    btn.classList.add("active");
+
+    currentCat = btn.dataset.cat;
+  });
+});
+
+
+/* KEYPAD */
+document.querySelectorAll(".num").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    if(!currentType || !currentCat){
+      alert("Vui lòng chọn THÁI/RI và A/B/C!");
+      return;
+    }
+    inputValue += btn.textContent;
+    updateDisplay();
+  });
+});
+
+document.getElementById("btnBack").addEventListener("click", ()=>{
+  inputValue = inputValue.slice(0,-1);
+  updateDisplay();
+});
+
+
+/* ENTER LƯU */
+document.getElementById("btnEnter").addEventListener("click", ()=>{
+  if(!inputValue || !currentType || !currentCat) return;
+
+  const rec = {
+    id: Date.now(),
+    group: Date.now(), // giữ group riêng cho mỗi record (không gộp cứng)
+    date: dateInput.value,
+    type: currentType,
+    cat: currentCat,
+    qty: Number(inputValue)
   };
 
-  function render() {
-    const d = load();
-    const ngay = ngayEl.value;
-    const loaiSR = loaiSREl.value;
+  records.push(rec);
+  localStorage.setItem(LS_KEY, JSON.stringify(records));
 
-    let tA = 0, tB = 0, tC = 0;
-    if (d[ngay]) {
-      d[ngay].forEach(item => {
-        if (item.loaiSR === loaiSR) {
-          if (item.hang === "A") tA += item.soLuong;
-          if (item.hang === "B") tB += item.soLuong;
-          if (item.hang === "C") tC += item.soLuong;
-        }
-      });
-    }
-    document.getElementById("tongA").textContent = formatNum(tA);
-    document.getElementById("tongB").textContent = formatNum(tB);
-    document.getElementById("tongC").textContent = formatNum(tC);
-    document.getElementById("tongAll").textContent = formatNum(tA + tB + tC);
+  inputValue = "";
+  updateDisplay();
+  renderSummary();
+  renderHistory();
+});
 
-    const out = document.getElementById("lichSu");
-    out.innerHTML = "";
-    const days = Object.keys(d).sort((a, b) => b.localeCompare(a));
 
-    days.forEach(day => {
-      const title = document.createElement("div");
-      title.className = "history-title";
-      title.textContent = day;
-      title.style.cursor = "pointer";
-
-      const content = document.createElement("div");
-      content.style.display = "none";
-
-      const table = document.createElement("table");
-      table.className = "history-table";
-      table.innerHTML = `
-        <thead>
-          <tr><th>Loại</th><th>A</th><th>B</th><th>C</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Thái</td><td id="ThaiA"></td><td id="ThaiB"></td><td id="ThaiC"></td></tr>
-          <tr><td>Ri</td><td id="RiA"></td><td id="RiB"></td><td id="RiC"></td></tr>
-        </tbody>
-      `;
-
-      const sums = { Thai:{A:0,B:0,C:0}, Ri:{A:0,B:0,C:0} };
-
-      d[day].forEach((item, idx) => {
-        sums[item.loaiSR][item.hang] += item.soLuong;
-      });
-
-      Object.keys(sums).forEach(type => {
-        ["A", "B", "C"].forEach(h => {
-          const cell = table.querySelector(`#${type}${h}`);
-          cell.textContent = sums[type][h] > 0 ? formatNum(sums[type][h]) : "";
-        });
-      });
-
-      // chi tiết xóa từng dòng
-      const list = document.createElement("div");
-      d[day].forEach((x, idx) => {
-        const div = document.createElement("div");
-        div.className = "item-line";
-        div.innerHTML = `${x.loaiSR} - Hạng ${x.hang}: ${formatNum(x.soLuong)}`;
-        const btn = document.createElement("button");
-        btn.textContent = "XÓA";
-        btn.className = "delete-btn";
-        btn.onclick = () => {
-          if (confirm("Xóa mục này?")) {
-            d[day].splice(idx, 1);
-            if (d[day].length === 0) delete d[day];
-            save(d);
-            render();
-          }
-        };
-        div.appendChild(btn);
-        list.appendChild(div);
-      });
-
-      content.appendChild(table);
-      content.appendChild(list);
-      title.onclick = () => content.style.display = content.style.display === "none" ? "block" : "none";
-      out.appendChild(title);
-      out.appendChild(content);
-    });
+/* DISPLAY */
+function updateDisplay(){
+  if(!inputValue){
+    display.textContent = "SỐ LƯỢNG";
+    display.style.color = "#cfcfcf";
+  } else {
+    display.textContent = fmt(Number(inputValue));
+    display.style.color = "#111";
   }
-
-  ngayEl.onchange = render;
-  loaiSREl.onchange = render;
-  render();
 }
+
+
+/* SUMMARY */
+function renderSummary(){
+  let A=0,B=0,C=0;
+
+  records.forEach(r=>{
+    if(r.type===currentType && r.date === dateInput.value){
+      if(r.cat==="A") A+=r.qty;
+      if(r.cat==="B") B+=r.qty;
+      if(r.cat==="C") C+=r.qty;
+    }
+  });
+
+  sumA.textContent = fmt(A);
+  sumB.textContent = fmt(B);
+  sumC.textContent = fmt(C);
+  totalAll.textContent = fmt(A+B+C);
+}
+
+
+/* XÓA TỪNG RECORD */
+function deleteRecord(id){
+  records = records.filter(r => r.id !== id);
+  localStorage.setItem(LS_KEY, JSON.stringify(records));
+  renderSummary();
+  renderHistory();
+}
+
+
+/* LỊCH SỬ DẠNG BẢNG 3 CỘT — TỰ DỒN KHI XOÁ (MỚI → CŨ) */
+function renderHistory() {
+  historyTable.innerHTML = "";
+
+  if (!currentType) return;
+
+  const list = records
+    .filter(r => r.type === currentType && r.date === dateInput.value)
+    .sort((a, b) => b.id - a.id);
+
+  const colA = list.filter(r => r.cat === "A");
+  const colB = list.filter(r => r.cat === "B");
+  const colC = list.filter(r => r.cat === "C");
+
+  const maxRows = Math.max(colA.length, colB.length, colC.length);
+
+  for (let i = 0; i < maxRows; i++) {
+    const row = document.createElement("tr");
+
+    // A
+    const tdA = document.createElement("td");
+    if (colA[i]) {
+      tdA.textContent = fmt(colA[i].qty);
+      const del = document.createElement("span");
+      del.textContent = " X";
+      del.className = "del-btn";
+      del.onclick = ()=> deleteRecord(colA[i].id);
+      tdA.appendChild(del);
+    }
+
+    // B
+    const tdB = document.createElement("td");
+    if (colB[i]) {
+      tdB.textContent = fmt(colB[i].qty);
+      const del = document.createElement("span");
+      del.textContent = " X";
+      del.className = "del-btn";
+      del.onclick = ()=> deleteRecord(colB[i].id);
+      tdB.appendChild(del);
+    }
+
+    // C
+    const tdC = document.createElement("td");
+    if (colC[i]) {
+      tdC.textContent = fmt(colC[i].qty);
+      const del = document.createElement("span");
+      del.textContent = " X";
+      del.className = "del-btn";
+      del.onclick = ()=> deleteRecord(colC[i].id);
+      tdC.appendChild(del);
+    }
+
+    row.appendChild(tdA);
+    row.appendChild(tdB);
+    row.appendChild(tdC);
+
+    historyTable.appendChild(row);
+  }
+}
+
+
+/* CLEAR ALL */
+clearAllBtn.addEventListener("click", ()=>{
+  if(confirm("Xoá toàn bộ dữ liệu của ngày này?")){
+    records = records.filter(r => r.date !== dateInput.value);
+    localStorage.setItem(LS_KEY, JSON.stringify(records));
+
+    renderSummary();
+    renderHistory();
+  }
+});
+
+/* SHOW / HIDE HISTORY */
+toggleBtn.addEventListener("click", ()=>{
+  historyBody.classList.toggle("hidden");
+  toggleBtn.textContent =
+    historyBody.classList.contains("hidden") ? "HIỆN" : "ẨN";
+});
+
+
+/* INIT */
+updateDisplay();
+renderSummary();
+renderHistory();
