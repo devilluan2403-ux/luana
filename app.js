@@ -1,8 +1,8 @@
 /* =======================================================
-   app.js — FULL CHUẨN (Customer Manager + Filter đúng)
+   app.js — FULL CHUẨN HOÁ ĐƠN DOANH NGHIỆP + QUẢN LÝ KHÁCH
    ======================================================= */
 
-/* ===== PWA BLOCK ===== */
+/* ===== PWA WARNING ===== */
 if (!window.matchMedia('(display-mode: standalone)').matches && !navigator.standalone) {
   const b = document.getElementById("notPwaMsg");
   if (b) b.classList.remove("hidden");
@@ -17,7 +17,7 @@ const LS_TOA       = "sr_toa";
 const LS_INVNAME   = "sr_invname";
 const APP_PASSWORD = "minhluan";
 
-/* ===== LOAD DATA ===== */
+/* ===== DATA ===== */
 let records  = JSON.parse(localStorage.getItem(LS_RECORDS)   || "[]");
 let customer = JSON.parse(localStorage.getItem(LS_CUSTOMER)  || "{}");
 let custList = JSON.parse(localStorage.getItem(LS_CUST_LIST) || "[]");
@@ -87,11 +87,57 @@ pwLoginBtn.onclick = () => {
   } else alert("Sai mật khẩu!");
 };
 
-/* ===== HELPERS ===== */
+/* ===== HELPER ===== */
 const fmt = n => Number(n).toLocaleString("vi-VN");
 const toLocalISO = d => new Date(d.getTime() - d.getTimezoneOffset()*60000)
   .toISOString().slice(0,10);
 const fDate = d => { d = new Date(d); return `Ngày ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`; };
+
+/* ==== ĐỌC SỐ THÀNH CHỮ ==== */
+function numberToWords(num) {
+  if (num === 0) return "không";
+
+  const units = ["", "nghìn", "triệu", "tỷ"];
+  const nums = ["không","một","hai","ba","bốn","năm","sáu","bảy","tám","chín"];
+
+  function read3Digits(n){
+    let tr = Math.floor(n/100);
+    let ch = Math.floor((n%100)/10);
+    let dv = n%10;
+    let str = "";
+
+    if (tr > 0){
+      str += nums[tr] + " trăm ";
+      if (ch == 0 && dv > 0) str += "lẻ ";
+    }
+    if (ch > 1){
+      str += nums[ch] + " mươi ";
+      if (dv == 1) str += "mốt ";
+      else if (dv == 5) str += "lăm ";
+      else if (dv > 0) str += nums[dv] + " ";
+    } else if (ch == 1){
+      str += "mười ";
+      if (dv > 0) str += nums[dv] + " ";
+    } else if (ch == 0 && dv > 0){
+      str += nums[dv] + " ";
+    }
+    return str.trim();
+  }
+
+  let i = 0;
+  let words = "";
+
+  while (num > 0){
+    let part = num % 1000;
+    if (part > 0){
+      let p = read3Digits(part);
+      words = p + " " + units[i] + " " + words;
+    }
+    num = Math.floor(num/1000);
+    i++;
+  }
+  return words.trim();
+}
 
 /* ===== INIT DATE ===== */
 dateInput.value = toLocalISO(new Date());
@@ -116,7 +162,7 @@ typeBtns.forEach(btn => {
   };
 });
 
-/* ===== CATEGORY ===== */
+/* ===== CAT ===== */
 catBtns.forEach(btn => {
   btn.onclick = () => {
     catBtns.forEach(b => b.classList.remove("active"));
@@ -130,6 +176,7 @@ document.querySelectorAll(".num").forEach(btn => {
   btn.onclick = () => {
     if (!currentType || !currentCat)
       return alert("Chọn THÁI/RI và loại A/B/C/D/K!");
+
     inputValue += btn.textContent;
     updateDisplay();
   };
@@ -153,6 +200,7 @@ document.getElementById("btnEnter").onclick = () => {
   });
 
   localStorage.setItem(LS_RECORDS, JSON.stringify(records));
+
   inputValue = "";
   updateDisplay();
   renderSummary();
@@ -170,16 +218,17 @@ function updateDisplay(){
   }
 }
 
-/* ===== SUMMARY (lọc theo khách + ngày + type) ===== */
+/* ===== SUMMARY ===== */
 function renderSummary(){
   let S = {A:0,B:0,C:0,D:0,K:0};
   const custName = invoiceNameInput.value || "";
 
   records.forEach(r => {
-    if (r.type === currentType &&
-        r.date === dateInput.value &&
-        r.customer === custName)
-    {
+    if (
+      r.type === currentType &&
+      r.date === dateInput.value &&
+      r.customer === custName
+    ){
       S[r.cat] += r.qty;
     }
   });
@@ -269,7 +318,7 @@ toggleBtn.onclick = () => {
   toggleBtn.textContent = historyBody.classList.contains("hidden") ? "HIỆN" : "ẨN";
 };
 
-/* ===== POPUP KHÁCH — CHỈ LƯU, KHÔNG CHỌN ===== */
+/* ===== POPUP KHÁCH ===== */
 custInfoBtn.onclick = () => {
   document.getElementById("cust_name").value   = customer.name   || "";
   document.getElementById("cust_phone").value  = customer.phone  || "";
@@ -307,7 +356,7 @@ saveCustBtn.onclick = () => {
   }
 
   custPopup.classList.add("hidden");
-  alert("Đã lưu thông tin khách hàng!");
+  alert("Đã lưu thông tin khách!");
 };
 
 /* ===== DS KH ===== */
@@ -347,7 +396,7 @@ function renderCustomerList(keyword = ""){
     });
 }
 
-/* ===== ĐƠN GIÁ ===== */
+/* ===== PRICES ===== */
 togglePriceBtn.onclick = () => pricesRow.classList.toggle("hidden");
 
 priceInputs.forEach(inp => {
@@ -358,7 +407,7 @@ priceInputs.forEach(inp => {
   };
 });
 
-/* ===== HÓA ĐƠN ===== */
+/* ===== EXPORT INVOICE ===== */
 exportInvBtn.onclick = () => {
   if (!currentType) return alert("Chọn THÁI hoặc RI!");
 
@@ -377,21 +426,36 @@ exportInvBtn.onclick = () => {
   const toa = toaInput.value;
 
   let html = `
-    <div style="padding:12px; font-family:Arial;">
-      <h2 style="text-align:center;">HÓA ĐƠN</h2>
-      <div>Ngày: ${fDate(date)}</div>
-      <div>Toa số: ${toa}</div>
-      <div>Khách hàng: ${custName}</div>
-      <table style="width:100%; border-collapse:collapse; margin-top:10px;">
-        <thead>
-          <tr>
-            <th style="border:1px solid #333; padding:6px;">Loại</th>
-            <th style="border:1px solid #333; padding:6px;">SL</th>
-            <th style="border:1px solid #333; padding:6px;">Giá</th>
-            <th style="border:1px solid #333; padding:6px;">Thành tiền</th>
-          </tr>
-        </thead>
-        <tbody>`;
+<div style="font-family:Arial; padding:18px;">
+  <div style="text-align:left; margin-bottom:10px;">
+    <div style="font-weight:bold; font-size:18px;">CTY TNHH HUỲNH NƯƠNG</div>
+    <div style="font-size:13px; margin-top:2px;">
+      Chuyên: KINH DOANH - MUA BÁN - XUẤT KHẨU CÁC LOẠI TRÁI CÂY<br>
+      Cơ sở 1: Ngũ Hiệp, Đồng Tháp<br>
+      Cơ sở 2: Krông Pak, Đắk Lắk<br>
+      Điện thoại: 0984 712 606 – 0353 631 084
+    </div>
+  </div>
+
+  <h2 style="text-align:center; margin:5px 0 10px 0;">HÓA ĐƠN</h2>
+
+  <div style="font-size:14px; margin-bottom:10px;">
+    <div><b>Ngày:</b> ${fDate(date)}</div>
+    <div><b>Toa số:</b> ${toa}</div>
+    <div><b>Khách hàng:</b> ${custName}</div>
+  </div>
+
+  <table style="width:100%; border-collapse:collapse; font-size:14px;">
+    <thead>
+      <tr>
+        <th style="border:1px solid #333; padding:6px;">Loại</th>
+        <th style="border:1px solid #333; padding:6px;">SL</th>
+        <th style="border:1px solid #333; padding:6px;">Giá</th>
+        <th style="border:1px solid #333; padding:6px;">Thành tiền</th>
+      </tr>
+    </thead>
+    <tbody>
+`;
 
   let total = 0;
   ["A","B","C","D","K"].forEach(cat => {
@@ -406,14 +470,32 @@ exportInvBtn.onclick = () => {
         <td style="border:1px solid #333; padding:6px; text-align:right;">${fmt(qty)}</td>
         <td style="border:1px solid #333; padding:6px; text-align:right;">${fmt(price)}</td>
         <td style="border:1px solid #333; padding:6px; text-align:right;">${fmt(amount)}</td>
-      </tr>`;
+      </tr>
+    `;
   });
 
   html += `
-        </tbody>
-      </table>
-      <h3 style="text-align:right;margin-top:10px;">Tổng cộng: ${fmt(total)}</h3>
-    </div>`;
+    </tbody>
+  </table>
+
+  <h3 style="text-align:right; margin-top:10px;">Tổng cộng: ${fmt(total)}</h3>
+
+  <div style="margin-top:6px; font-size:14px;">
+    <b>Thành tiền (bằng chữ):</b> ${numberToWords(total)} đồng
+  </div>
+
+  <div style="margin-top:10px; font-size:14px;">
+    <b>STK:</b> ${customer.stk || ""}<br>
+    <b>Ngân hàng:</b> ${customer.bank || ""}<br>
+    <b>Tên tài khoản:</b> ${customer.tkname || ""}
+  </div>
+
+  <div style="margin-top:20px; text-align:right; font-size:14px;">
+    Ngày xuất hóa đơn: ${fDate(new Date())}<br>
+    <b>Người viết hóa đơn:</b> MY
+  </div>
+</div>
+`;
 
   invoiceContent.innerHTML = html;
   invPopup.classList.remove("hidden");
@@ -428,11 +510,11 @@ function init(){
   invoiceNameInput.value = localStorage.getItem(LS_INVNAME) || "";
 
   toaInput.onchange = () => localStorage.setItem(LS_TOA, toaInput.value);
-  invoiceNameInput.onchange = () => localStorage.setItem(LS_INVNAME, invoiceNameInput.value);
+  invoiceNameInput.onchange = () =>
+    localStorage.setItem(LS_INVNAME, invoiceNameInput.value);
 
   updateDisplay();
   renderSummary();
   renderHistory();
 }
-
 init();
