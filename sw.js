@@ -1,37 +1,20 @@
-const CACHE_NAME = 'ghi-can-cache-v1';
-const FILES_TO_CACHE = [
-  './',
-  './index.html',
-  './style.css',
-  './app.js',
-  './manifest.json',
-  './apple-touch-icon.png',
-  './icon-192.png',
-  './icon-512.png'
+const CACHE = "sr-cache-v1";
+const FILES = [
+  "index.html",
+  "style.css",
+  "app.js"
+  // KHÔNG CACHE manifest hoặc icon
 ];
 
-self.addEventListener('install', evt => {
-  evt.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
+self.addEventListener("install", e => {
+  e.waitUntil(
+    caches.open(CACHE).then(cache => cache.addAll(FILES))
   );
-  self.skipWaiting();
 });
 
-self.addEventListener('activate', evt => {
-  evt.waitUntil(
-    caches.keys().then(keys => 
-      Promise.all(keys.map(key => {
-        if(key !== CACHE_NAME) return caches.delete(key);
-      }))
-    )
-  );
-  self.clients.claim();
-});
-
-self.addEventListener('fetch', evt => {
-  evt.respondWith(
-    caches.match(evt.request)
-      .then(resp => resp || fetch(evt.request))
-      .catch(() => caches.match('./index.html'))
+// DÙNG NETWORK FIRST để icon, manifest luôn cập nhật
+self.addEventListener("fetch", event => {
+  event.respondWith(
+    fetch(event.request).catch(() => caches.match(event.request))
   );
 });
