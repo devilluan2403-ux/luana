@@ -1,26 +1,24 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
-  <!-- BẮT BUỘC CHO iPHONE -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-
   <title>Ghi Số Sầu Riêng</title>
 
   <link rel="stylesheet" href="style.css">
-
-  <!-- Icon chuẩn iOS -->
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-
-  <!-- manifest -->
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
 
-<!-- MÀN HÌNH NHẬP MẬT KHẨU -->
+<!-- CHẶN KHI KHÔNG CHẠY PWA -->
+<div id="notPwaMsg" class="hidden full-cover">
+  <div class="pw-box">Ứng dụng chỉ hoạt động khi được thêm vào Màn hình chính.<br><br>Chân thành cảm ơn.</div>
+</div>
+
+<!-- MÀN HÌNH MẬT KHẨU -->
 <div id="passwordScreen" class="pw-screen hidden">
   <div class="pw-box">
     <h2>Nhập mật khẩu</h2>
@@ -31,26 +29,36 @@
 
 <main class="screen">
 
-  <!-- NGÀY + THÁI/RI -->
+  <!-- PHẦN NGÀY + TOA SỐ + TÊN KH + NÚT THÁI/RI/KHÁCH/XUẤT -->
   <section class="card card-top">
-
     <div class="date-wrapper">
       <div class="date-pill" id="datePill"></div>
       <input id="dateInput" type="date" class="date-input-real" />
     </div>
 
-    <div class="select-row">
-      <button class="btn-select type-btn" data-type="thai">THÁI</button>
-      <button class="btn-select type-btn" data-type="ri">RI</button>
+    <div class="row-actions">
+      <div class="type-row">
+        <button class="btn-select type-btn" data-type="thai">THÁI</button>
+        <button class="btn-select type-btn" data-type="ri">RI</button>
+        <button class="btn-select" id="custInfoBtn">KHÁCH</button>
+        <button class="btn-select" id="exportInvBtn">XUẤT HĐ</button>
+      </div>
+
+      <div class="meta-row">
+        <label>Toa số <input id="toaInput" type="number" min="1"/></label>
+        <label>Tên KH <input id="invoiceNameInput" type="text"/></label>
+      </div>
     </div>
   </section>
 
-  <!-- TỔNG -->
+  <!-- PHẦN TỔNG A/B/C/D/K -->
   <section class="card card-totals">
     <div class="totals-row">
       <div class="total-pill"><div class="label">A</div><div class="value" id="sumA">0</div></div>
       <div class="total-pill"><div class="label">B</div><div class="value" id="sumB">0</div></div>
       <div class="total-pill"><div class="label">C</div><div class="value" id="sumC">0</div></div>
+      <div class="total-pill"><div class="label">D</div><div class="value" id="sumD">0</div></div>
+      <div class="total-pill"><div class="label">K</div><div class="value" id="sumK">0</div></div>
     </div>
 
     <div class="grand-pill">
@@ -59,18 +67,32 @@
     </div>
   </section>
 
-  <!-- CHỌN A/B/C + DISPLAY -->
+  <!-- PHẦN CHỌN A/B/C/D/K + ĐƠN GIÁ -->
   <section class="card card-input">
-    <div class="select-row">
+    <div class="select-row" id="catRow">
       <button class="btn-select cat-btn" data-cat="A">A</button>
       <button class="btn-select cat-btn" data-cat="B">B</button>
       <button class="btn-select cat-btn" data-cat="C">C</button>
+      <button class="btn-select cat-btn" data-cat="D">D</button>
+      <button class="btn-select cat-btn" data-cat="K">K</button>
     </div>
 
     <div class="display-slab" id="display">SỐ LƯỢNG</div>
+
+    <div class="price-toggle-row">
+      <button id="togglePriceBtn" class="small-btn">HIỆN/ẨN ĐƠN GIÁ</button>
+    </div>
+
+    <div class="prices-row hidden" id="pricesRow">
+      <label>A <input class="price-input" data-cat="A" type="number" min="0"/></label>
+      <label>B <input class="price-input" data-cat="B" type="number" min="0"/></label>
+      <label>C <input class="price-input" data-cat="C" type="number" min="0"/></label>
+      <label>D <input class="price-input" data-cat="D" type="number" min="0"/></label>
+      <label>K <input class="price-input" data-cat="K" type="number" min="0"/></label>
+    </div>
   </section>
 
-  <!-- KEYPAD -->
+  <!-- BÀN PHÍM NHẬP SỐ -->
   <nav class="keypad">
     <button class="kbtn num">1</button>
     <button class="kbtn num">2</button>
@@ -93,13 +115,11 @@
         <div class="hist-title">LỊCH SỬ NHẬP</div>
         <div id="historyDate">Ngày …</div>
       </div>
-
       <div class="history-actions">
         <button id="clearAll" class="small-btn">XÓA DỮ LIỆU</button>
         <button id="toggleBtn" class="small-btn">ẨN</button>
       </div>
     </header>
-
     <div class="history-body" id="historyBody">
       <table class="history-table">
         <thead>
@@ -107,15 +127,35 @@
             <th>A</th>
             <th>B</th>
             <th>C</th>
+            <th>D</th>
+            <th>K</th>
           </tr>
         </thead>
         <tbody id="historyTable"></tbody>
       </table>
     </div>
   </section>
-
 </main>
 
-<script src="app.js"></script>
-</body>
-</html>
+<!-- POPUP KHÁCH HÀNG -->
+<div id="custPopup" class="modal hidden">
+  <div class="modal-inner">
+    <h3>Thông tin khách hàng</h3>
+    <label>Tên khách <input id="cust_name" type="text"/></label>
+    <label>SĐT <input id="cust_phone" type="tel"/></label>
+    <label>STK <input id="cust_stk" type="text"/></label>
+    <label>Tên TK <input id="cust_tkname" type="text"/></label>
+    <label>Ngân hàng <input id="cust_bank" type="text"/></label>
+    <div class="modal-actions">
+      <button id="saveCustBtn" class="small-btn">LƯU</button>
+      <button id="closeCustBtn" class="small-btn">ĐÓNG</button>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP HÓA ĐƠN -->
+<div id="invPopup" class="modal hidden">
+  <div class="modal-inner invoice" id="invoiceContent"></div>
+  <div class="modal-actions">
+    <button id="printInvBtn" class="small-btn">IN / XUẤT PDF</button>
+    <button id="closeInvBtn" class="small-btn">ĐÓNG
