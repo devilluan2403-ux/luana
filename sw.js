@@ -1,20 +1,27 @@
-const CACHE = "sr-cache-v1";
+const CACHE_NAME = 'ghisr-v1';
 const FILES = [
-  "index.html",
-  "style.css",
-  "app.js"
-  // KHÔNG CACHE manifest hoặc icon
+  '/',
+  '/index.html',
+  '/style.css',
+  '/app.js',
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png'
 ];
 
-self.addEventListener("install", e => {
-  e.waitUntil(
-    caches.open(CACHE).then(cache => cache.addAll(FILES))
+self.addEventListener('install', (evt) => {
+  evt.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES))
   );
+  self.skipWaiting();
 });
 
-// DÙNG NETWORK FIRST để icon, manifest luôn cập nhật
-self.addEventListener("fetch", event => {
-  event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+self.addEventListener('activate', (evt) => {
+  evt.waitUntil(self.clients.claim());
+});
+
+self.addEventListener('fetch', (evt) => {
+  evt.respondWith(
+    caches.match(evt.request).then(resp => resp || fetch(evt.request))
   );
 });
