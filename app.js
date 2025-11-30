@@ -1,117 +1,427 @@
-// CHẶN SAFARI - chỉ chạy PWA
+/* =============================
+   APP.JS — BẢN VIẾT LẠI HOÀN CHỈNH
+   ĐÃ ĐỒNG BỘ 100% VỚI index.html MỚI
+   ============================= */
+
+/* =============================
+   CHẶN SAFARI — CHỈ CHẠY PWA
+   ============================= */
 if (!window.matchMedia('(display-mode: standalone)').matches && !navigator.standalone) {
-  document.getElementById('notPwaMsg').classList.remove('hidden');
+  const pwaBlock = document.getElementById('notPwaMsg');
+  if (pwaBlock) pwaBlock.classList.remove('hidden');
 }
 
-const APP_PASSWORD = 'minhluan';
-const LS_KEY = 'sr_records';
-const LS_CUST = 'sr_customer';
-const LS_PRICES = 'sr_prices';
-const LS_TOA = 'sr_toa';
 
-let records = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
-let prices = JSON.parse(localStorage.getItem(LS_PRICES) || '{}');
-let customer = JSON.parse(localStorage.getItem(LS_CUST) || '{}');
+/* =============================
+          CẤU HÌNH LƯU TRỮ
+   ============================= */
+const APP_PASSWORD = "minhluan";
+const LS_KEY     = "sr_records";
+const LS_CUST    = "sr_customer";
+const LS_PRICES  = "sr_prices";
+const LS_TOA     = "sr_toa";
+const LS_INVNAME = "sr_invname";
+
+let records  = JSON.parse(localStorage.getItem(LS_KEY)    || "[]");
+let customer = JSON.parse(localStorage.getItem(LS_CUST)   || "{}");
+let prices   = JSON.parse(localStorage.getItem(LS_PRICES) || "{}");
 
 let currentType = null;
-let currentCat = null;
-let inputValue = '';
+let currentCat  = null;
+let inputValue  = "";
 
-// ELEMENTS
-const dateInput = document.getElementById('dateInput');
-const datePill = document.getElementById('datePill');
-const typeBtns = document.querySelectorAll('.type-btn');
-const catBtns = document.querySelectorAll('.cat-btn');
-const display = document.getElementById('display');
 
-const sumA = document.getElementById('sumA');
-const sumB = document.getElementById('sumB');
-const sumC = document.getElementById('sumC');
-const sumD = document.getElementById('sumD');
-const sumK = document.getElementById('sumK');
-const totalAll = document.getElementById('totalAll');
+/* =============================
+                DOM
+   ============================= */
+// PASSWORD
+const pwScreen   = document.getElementById("passwordScreen");
+const pwInput    = document.getElementById("pwInput");
+const pwLoginBtn = document.getElementById("pwLoginBtn");
 
-const historyTable = document.getElementById('historyTable');
-const historyBody = document.getElementById('historyBody');
-const toggleBtn = document.getElementById('toggleBtn');
-const clearAllBtn = document.getElementById('clearAll');
-const historyDate = document.getElementById('historyDate');
+// DATE
+const dateInput = document.getElementById("dateInput");
+const datePill  = document.getElementById("datePill");
+const historyDate = document.getElementById("historyDate");
 
-const custInfoBtn = document.getElementById('custInfoBtn');
-const custPopup = document.getElementById('custPopup');
-const saveCustBtn = document.getElementById('saveCustBtn');
-const closeCustBtn = document.getElementById('closeCustBtn');
+// TOA + TÊN KH
+const toaInput = document.getElementById("toaInput");
+const invoiceNameInput = document.getElementById("invoiceNameInput");
 
-const exportInvBtn = document.getElementById('exportInvBtn');
-const invPopup = document.getElementById('invPopup');
-const invoiceContent = document.getElementById('invoiceContent');
-const printInvBtn = document.getElementById('printInvBtn');
-const closeInvBtn = document.getElementById('closeInvBtn');
+// TYPE + CAT
+const typeBtns = document.querySelectorAll(".type-btn");
+const catBtns  = document.querySelectorAll(".cat-btn");
 
-const toaInput = document.getElementById('toaInput');
-const invoiceNameInput = document.getElementById('invoiceNameInput');
+// DISPLAY
+const display = document.getElementById("display");
 
-const togglePriceBtn = document.getElementById('togglePriceBtn');
-const pricesRow = document.getElementById('pricesRow');
-const priceInputs = document.querySelectorAll('.price-input');
+// SUMMARY
+const sumA = document.getElementById("sumA");
+const sumB = document.getElementById("sumB");
+const sumC = document.getElementById("sumC");
+const sumD = document.getElementById("sumD");
+const sumK = document.getElementById("sumK");
+const totalAll = document.getElementById("totalAll");
 
-/* PASSWORD UI */
-const pwScreen = document.getElementById('passwordScreen');
-const pwInput = document.getElementById('pwInput');
-const pwLoginBtn = document.getElementById('pwLoginBtn');
-if (!localStorage.getItem('auth_ok')) pwScreen.classList.remove('hidden');
-pwLoginBtn.addEventListener('click', ()=>{
-  if (pwInput.value.trim() === APP_PASSWORD){
-    localStorage.setItem('auth_ok','1');
-    pwScreen.classList.add('hidden');
-  } else alert('Sai mật khẩu!');
-});
+// HISTORY
+const historyTable = document.getElementById("historyTable");
+const historyBody  = document.getElementById("historyBody");
+const clearAllBtn  = document.getElementById("clearAll");
+const toggleBtn    = document.getElementById("toggleBtn");
 
-/* FORMAT */
-function fmt(n){ return Number(n).toLocaleString('vi-VN'); }
+// PRICE
+const togglePriceBtn = document.getElementById("togglePriceBtn");
+const pricesRow      = document.getElementById("pricesRow");
+const priceInputs    = document.querySelectorAll(".price-input");
 
-/* DATE */
-function toLocalISO(d){ return new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,10); }
-function fDate(d){ d = new Date(d); return `Ngày ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`; }
+// POPUP KHÁCH
+const custInfoBtn = document.getElementById("custInfoBtn");
+const custPopup   = document.getElementById("custPopup");
+const saveCustBtn = document.getElementById("saveCustBtn");
+const closeCustBtn= document.getElementById("closeCustBtn");
 
+// POPUP HÓA ĐƠN
+const exportInvBtn  = document.getElementById("exportInvBtn");
+const invPopup      = document.getElementById("invPopup");
+const invoiceContent= document.getElementById("invoiceContent");
+const printInvBtn   = document.getElementById("printInvBtn");
+const closeInvBtn   = document.getElementById("closeInvBtn");
+
+
+/* =============================
+             PASSWORD
+   ============================= */
+if (!localStorage.getItem("auth_ok")) pwScreen.classList.remove("hidden");
+
+pwLoginBtn.onclick = () => {
+  if (pwInput.value.trim() === APP_PASSWORD) {
+    localStorage.setItem("auth_ok", "1");
+    pwScreen.classList.add("hidden");
+  } else alert("Sai mật khẩu!");
+};
+
+
+/* =============================
+             FORMAT
+   ============================= */
+const fmt = n => Number(n).toLocaleString("vi-VN");
+
+const toLocalISO = d => new Date(d.getTime() - d.getTimezoneOffset()*60000)
+  .toISOString().slice(0,10);
+
+const fDate = d => {
+  d = new Date(d);
+  return `Ngày ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+};
+
+
+/* =============================
+              NGÀY
+   ============================= */
 dateInput.value = toLocalISO(new Date());
 datePill.textContent = fDate(dateInput.value);
 historyDate.textContent = fDate(dateInput.value);
 
-dateInput.addEventListener('change', ()=>{ datePill.textContent = fDate(dateInput.value); historyDate.textContent = fDate(dateInput.value); renderSummary(); renderHistory(); });
+dateInput.addEventListener("change", () => {
+  datePill.textContent = fDate(dateInput.value);
+  historyDate.textContent = fDate(dateInput.value);
+  renderSummary();
+  renderHistory();
+});
 
-/* TYPE BTN */
-typeBtns.forEach(btn=>{ btn.addEventListener('click', ()=>{ typeBtns.forEach(x=>x.classList.remove('active')); btn.classList.add('active'); currentType = btn.dataset.type; renderSummary(); renderHistory(); }); });
 
-/* CAT BTN */
-catBtns.forEach(btn=>{ btn.addEventListener('click', ()=>{ catBtns.forEach(x=>x.classList.remove('active')); btn.classList.add('active'); currentCat = btn.dataset.cat; }); });
+/* =============================
+            TYPE BTN
+   ============================= */
+typeBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    typeBtns.forEach(x => x.classList.remove("active"));
+    btn.classList.add("active");
+    currentType = btn.dataset.type;
+    renderSummary();
+    renderHistory();
+  });
+});
 
-/* KEYPAD */
-document.querySelectorAll('.num').forEach(btn=>{ btn.addEventListener('click', ()=>{ if(!currentType || !currentCat){ alert('Vui lòng chọn THÁI/RI và A/B/C/D/K!'); return; } inputValue += btn.textContent; updateDisplay(); }); });
 
-document.getElementById('btnBack').addEventListener('click', ()=>{ inputValue = inputValue.slice(0,-1); updateDisplay(); });
+/* =============================
+            CAT BTN
+   ============================= */
+catBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    catBtns.forEach(x => x.classList.remove("active"));
+    btn.classList.add("active");
+    currentCat = btn.dataset.cat;
+  });
+});
 
-document.getElementById('btnEnter').addEventListener('click', ()=>{ if(!inputValue || !currentType || !currentCat) return; const rec = { id: Date.now(), group: Date.now(), date: dateInput.value, type: currentType, cat: currentCat, qty: Number(inputValue) }; records.push(rec); localStorage.setItem(LS_KEY, JSON.stringify(records)); inputValue = ''; updateDisplay(); renderSummary(); renderHistory(); });
 
-/* DISPLAY */
-function updateDisplay(){ if(!inputValue){ display.textContent = 'SỐ LƯỢNG'; display.style.color = '#cfcfcf'; } else { display.textContent = fmt(Number(inputValue)); display.style.color = '#111'; } }
+/* =============================
+             KEYPAD
+   ============================= */
+document.querySelectorAll(".num").forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (!currentType || !currentCat) {
+      alert("Vui lòng chọn THÁI/RI và A/B/C/D/K!");
+      return;
+    }
+    inputValue += btn.textContent;
+    updateDisplay();
+  });
+});
 
-/* SUMMARY */
-function renderSummary(){ let A=0,B=0,C=0,D=0,K=0; records.forEach(r=>{ if(r.type===currentType && r.date===dateInput.value){ if(r.cat==='A') A+=r.qty; if(r.cat==='B') B+=r.qty; if(r.cat==='C') C+=r.qty; if(r.cat==='D') D+=r.qty; if(r.cat==='K') K+=r.qty; } }); sumA.textContent = fmt(A); sumB.textContent = fmt(B); sumC.textContent = fmt(C); sumD.textContent = fmt(D); sumK.textContent = fmt(K); totalAll.textContent = fmt(A+B+C+D+K); }
+document.getElementById("btnBack").onclick = () => {
+  inputValue = inputValue.slice(0, -1);
+  updateDisplay();
+};
 
-/* DELETE */
-function deleteRecord(id){ records = records.filter(r=>r.id!==id); localStorage.setItem(LS_KEY, JSON.stringify(records)); renderSummary(); renderHistory(); }
+document.getElementById("btnEnter").onclick = () => {
+  if (!inputValue || !currentType || !currentCat) return;
 
-/* HISTORY */
-function makeCell(item){ const td = document.createElement('td'); if(item){ td.textContent = fmt(item.qty); const del = document.createElement('span'); del.textContent = ' X'; del.className = 'del-btn'; del.onclick = ()=> deleteRecord(item.id); td.appendChild(del); } return td; }
+  const rec = {
+    id: Date.now(),
+    date: dateInput.value,
+    type: currentType,
+    cat: currentCat,
+    qty: Number(inputValue)
+  };
 
-function renderHistory(){ historyTable.innerHTML = ''; if(!currentType) return; const list = records.filter(r=>r.type===currentType && r.date===dateInput.value).sort((a,b)=>b.id-a.id); const colA = list.filter(r=>r.cat==='A'); const colB = list.filter(r=>r.cat==='B'); const colC = list.filter(r=>r.cat==='C'); const colD = list.filter(r=>r.cat==='D'); const colK = list.filter(r=>r.cat==='K'); const maxRows = Math.max(colA.length, colB.length, colC.length, colD.length, colK.length); for(let i=0;i<maxRows;i++){ const row = document.createElement('tr'); row.appendChild(makeCell(colA[i])); row.appendChild(makeCell(colB[i])); row.appendChild(makeCell(colC[i])); row.appendChild(makeCell(colD[i])); row.appendChild(makeCell(colK[i])); historyTable.appendChild(row); } }
+  records.push(rec);
+  localStorage.setItem(LS_KEY, JSON.stringify(records));
 
-/* CLEAR ALL */
-clearAllBtn.addEventListener('click', ()=>{ if(confirm('Xoá toàn bộ dữ liệu của ngày này?')){ records = records.filter(r=>r.date!==dateInput.value); localStorage.setItem(LS_KEY, JSON.stringify(records)); renderSummary(); renderHistory(); } });
+  inputValue = "";
+  updateDisplay();
+  renderSummary();
+  renderHistory();
+};
 
-/* TOGGLE HISTORY */
-toggleBtn.addEventListener('click', ()=>{ historyBody.classList.toggle('hidden'); toggleBtn.textContent = historyBody.classList.contains('hidden') ? 'HIỆN' : 'ẨN'; });
 
-/* CUSTOMER POPUP */
-function openCust(){ document.getElementById('cust_name').value = customer.name || ''; document.getElementById('cust_phone').value = customer.phone || ''; document.getElementById('cust_stk').value = customer.stk || ''; document.getElementById
+/* =============================
+            DISPLAY
+   ============================= */
+function updateDisplay() {
+  if (!inputValue) {
+    display.textContent = "SỐ LƯỢNG";
+    display.style.color = "#cfcfcf";
+  } else {
+    display.textContent = fmt(inputValue);
+    display.style.color = "#111";
+  }
+}
+
+
+/* =============================
+          SUMMARY (A–K)
+   ============================= */
+function renderSummary() {
+  let S = { A:0, B:0, C:0, D:0, K:0 };
+
+  records.forEach(r => {
+    if (r.type === currentType && r.date === dateInput.value) {
+      S[r.cat] += r.qty;
+    }
+  });
+
+  sumA.textContent = fmt(S.A);
+  sumB.textContent = fmt(S.B);
+  sumC.textContent = fmt(S.C);
+  sumD.textContent = fmt(S.D);
+  sumK.textContent = fmt(S.K);
+
+  totalAll.textContent = fmt(S.A + S.B + S.C + S.D + S.K);
+}
+
+
+/* =============================
+             HISTORY
+   ============================= */
+function makeCell(item) {
+  const td = document.createElement("td");
+  if (item) {
+    td.textContent = fmt(item.qty);
+    const del = document.createElement("span");
+    del.textContent = " X";
+    del.className = "del-btn";
+    del.onclick = () => deleteRecord(item.id);
+    td.appendChild(del);
+  }
+  return td;
+
+}
+
+function renderHistory() {
+  historyTable.innerHTML = "";
+  if (!currentType) return;
+
+  const list = records
+    .filter(r => r.type === currentType && r.date === dateInput.value)
+    .sort((a,b) => b.id - a.id);
+
+  const col = {
+    A: list.filter(r=>r.cat==='A'),
+    B: list.filter(r=>r.cat==='B'),
+    C: list.filter(r=>r.cat==='C'),
+    D: list.filter(r=>r.cat==='D'),
+    K: list.filter(r=>r.cat==='K')
+  };
+
+  const maxRows = Math.max(col.A.length, col.B.length, col.C.length, col.D.length, col.K.length);
+
+  for (let i=0; i<maxRows; i++) {
+    const tr = document.createElement("tr");
+    tr.appendChild(makeCell(col.A[i]));
+    tr.appendChild(makeCell(col.B[i]));
+    tr.appendChild(makeCell(col.C[i]));
+    tr.appendChild(makeCell(col.D[i]));
+    tr.appendChild(makeCell(col.K[i]));
+    historyTable.appendChild(tr);
+  }
+}
+
+function deleteRecord(id) {
+  records = records.filter(r => r.id !== id);
+  localStorage.setItem(LS_KEY, JSON.stringify(records));
+  renderSummary();
+  renderHistory();
+}
+
+clearAllBtn.onclick = () => {
+  if (confirm("Xóa toàn bộ dữ liệu ngày này?")) {
+    records = records.filter(r => r.date !== dateInput.value);
+    localStorage.setItem(LS_KEY, JSON.stringify(records));
+    renderSummary();
+    renderHistory();
+  }
+};
+
+toggleBtn.onclick = () => {
+  historyBody.classList.toggle("hidden");
+  toggleBtn.textContent = historyBody.classList.contains("hidden") ? "HIỆN" : "ẨN";
+};
+
+/* =============================
+      POPUP THÔNG TIN KHÁCH
+   ============================= */
+custInfoBtn.onclick = () => {
+  document.getElementById("cust_name").value   = customer.name   || "";
+  document.getElementById("cust_phone").value  = customer.phone  || "";
+  document.getElementById("cust_stk").value    = customer.stk    || "";
+  document.getElementById("cust_tkname").value = customer.tkname || "";
+  document.getElementById("cust_bank").value   = customer.bank   || "";
+  custPopup.classList.remove("hidden");
+};
+
+closeCustBtn.onclick = () => custPopup.classList.add("hidden");
+saveCustBtn.onclick = () => {
+  customer = {
+    name   : document.getElementById("cust_name").value,
+    phone  : document.getElementById("cust_phone").value,
+    stk    : document.getElementById("cust_stk").value,
+    tkname : document.getElementById("cust_tkname").value,
+    bank   : document.getElementById("cust_bank").value
+  };
+  localStorage.setItem(LS_CUST, JSON.stringify(customer));
+  custPopup.classList.add("hidden");
+  alert("Đã lưu thông tin khách hàng!");
+};
+
+/* =============================
+           ĐƠN GIÁ
+   ============================= */
+togglePriceBtn.onclick = () => {
+  pricesRow.classList.toggle("hidden");
+};
+
+priceInputs.forEach(inp => {
+  inp.value = prices[inp.dataset.cat] || "";
+  inp.onchange = () => {
+    prices[inp.dataset.cat] = Number(inp.value) || 0;
+    localStorage.setItem(LS_PRICES, JSON.stringify(prices));
+  };
+});
+
+/* =============================
+           HÓA ĐƠN
+   ============================= */
+exportInvBtn.onclick = () => {
+  if (!currentType) return alert("Chọn THÁI hoặc RI trước!");
+
+  const date = dateInput.value;
+  const list = records.filter(r => r.type === currentType && r.date === date);
+
+  const sums = { A:0, B:0, C:0, D:0, K:0 };
+  list.forEach(r => sums[r.cat] += r.qty);
+
+  const toa = toaInput.value;
+  const invName = invoiceNameInput.value;
+
+  let html = `
+    <div style="padding:12px; font-family:Arial;">
+      <h2 style="text-align:center;">HÓA ĐƠN MUA BÁN</h2>
+      <div>Ngày: ${fDate(date)}</div>
+      <div>Toa số: ${toa}</div>
+      <div>Tên KH: ${invName}</div>
+      <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+        <thead>
+          <tr>
+            <th style="border:1px solid #333; padding:6px;">Loại</th>
+            <th style="border:1px solid #333; padding:6px;">Số lượng</th>
+            <th style="border:1px solid #333; padding:6px;">Đơn giá</th>
+            <th style="border:1px solid #333; padding:6px;">Thành tiền</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  let total = 0;
+  ["A","B","C","D","K"].forEach(cat => {
+    const qty = sums[cat];
+    const price = prices[cat] || 0;
+    const amt = qty * price;
+    total += amt;
+
+    html += `
+      <tr>
+        <td style="border:1px solid #333; padding:6px;">${cat}</td>
+        <td style="border:1px solid #333; padding:6px; text-align:right;">${fmt(qty)}</td>
+        <td style="border:1px solid #333; padding:6px; text-align:right;">${fmt(price)}</td>
+        <td style="border:1px solid #333; padding:6px; text-align:right;">${fmt(amt)}</td>
+      </tr>
+    `;
+  });
+
+  html += `
+        </tbody>
+      </table>
+      <h3 style="text-align:right; margin-top:10px;">Tổng cộng: ${fmt(total)}</h3>
+
+      <div style="margin-top:10px;">Thông tin khách:</div>
+      <div>Tên: ${customer.name || ""}</div>
+      <div>SĐT: ${customer.phone || ""}</div>
+      <div>STK: ${customer.stk || ""} - ${customer.tkname || ""} (${customer.bank || ""})</div>
+    </div>
+  `;
+
+  invoiceContent.innerHTML = html;
+  invPopup.classList.remove("hidden");
+};
+
+closeInvBtn.onclick = () => invPopup.classList.add("hidden");
+printInvBtn.onclick = () => window.print();
+
+/* =============================
+              INIT
+   ============================= */
+function init() {
+  toaInput.value = localStorage.getItem(LS_TOA) || "";
+  invoiceNameInput.value = localStorage.getItem(LS_INVNAME) || "";
+
+  toaInput.onchange = () => localStorage.setItem(LS_TOA, toaInput.value);
+  invoiceNameInput.onchange = () => localStorage.setItem(LS_INVNAME, invoiceNameInput.value);
+
+  updateDisplay();
+  renderSummary();
+  renderHistory();
+}
+
+init();
