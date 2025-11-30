@@ -43,14 +43,15 @@
 
     <!-- TÊN KH -->
     <div class="meta-row-full">
-      <label>Tên KH <input id="invoiceNameInput" type="text" /></label>
+      <label>Tên KH <input id="invoiceNameInput" type="text" placeholder="Tên khách (chọn từ DS KH hoặc nhập tay)" /></label>
     </div>
 
-    <!-- THÁI / RI / KHÁCH / XUẤT HĐ -->
+    <!-- THÁI / RI / KHÁCH / DS KH / XUẤT HĐ -->
     <div class="type-row-full">
       <button class="btn-select type-btn" data-type="thai">THÁI</button>
       <button class="btn-select type-btn" data-type="ri">RI</button>
       <button class="btn-select" id="custInfoBtn">KHÁCH</button>
+      <button class="btn-select" id="custListBtn">DS KH</button>
       <button class="btn-select" id="exportInvBtn">XUẤT HĐ</button>
     </div>
   </section>
@@ -152,6 +153,21 @@
     <div class="modal-actions">
       <button id="saveCustBtn" class="small-btn">LƯU</button>
       <button id="closeCustBtn" class="small-btn">ĐÓNG</button>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP DANH SÁCH KHÁCH -->
+<div id="custListPopup" class="modal hidden">
+  <div class="modal-inner">
+    <h3>Danh sách khách hàng</h3>
+
+    <input id="searchCust" placeholder="Tìm khách..." style="width:100%;padding:8px;margin-bottom:10px;border-radius:8px;border:1px solid #ccc;">
+
+    <div id="custListBox" style="max-height:300px; overflow-y:auto;"></div>
+
+    <div class="modal-actions" style="margin-top:15px;text-align:right;">
+      <button id="closeCustListBtn" class="small-btn">ĐÓNG</button>
     </div>
   </div>
 </div>
