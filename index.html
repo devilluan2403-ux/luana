@@ -97,7 +97,7 @@
   </section>
 
   <!-- KEYPAD -->
-  <nav class="keypad">
+  <nav class="keypad" aria-label="Bàn phím số">
     <button class="kbtn num">1</button>
     <button class="kbtn num">2</button>
     <button class="kbtn num">3</button>
@@ -175,7 +175,9 @@
 <!-- POPUP HÓA ĐƠN -->
 <div id="invPopup" class="modal hidden">
   <div class="modal-inner invoice" id="invoiceContent"></div>
-  <div class="modal-actions">
+
+  <!-- Nút nằm dưới hóa đơn -->
+  <div class="modal-actions inv-actions">
     <button id="printInvBtn" class="small-btn">IN / XUẤT PDF</button>
     <button id="closeInvBtn" class="small-btn">ĐÓNG</button>
   </div>
