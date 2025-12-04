@@ -86,9 +86,25 @@ body{
 .modal{ position:fixed; inset:0; background:rgba(0,0,0,0.35); display:flex; justify-content:center; align-items:center; z-index:9999; }
 .hidden{ display:none !important; }
 .modal-inner{ background:white; padding:16px; border-radius:12px; width:90%; max-width:420px; max-height:80vh; overflow:auto; }
-.modal-inner label{ display:block; margin-bottom:12px; }
-.modal-inner input{ width:100%; margin-top:4px; padding:8px; border-radius:8px; border:1px solid #ccc; }
-.modal-actions{ margin-top:12px; display:flex; justify-content:center; gap:10px; }
+
+/* ==== SỬA GIAO DIỆN HÓA ĐƠN ==== */
+.modal-inner.invoice {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-bottom: 20px;
+}
+
+.inv-actions {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+
+.inv-actions .small-btn {
+  font-size: 16px;
+  padding: 10px 16px;
+}
 
 /* PASSWORD */
 .pw-screen{ position:fixed; inset:0; background:white; display:flex; justify-content:center; align-items:center; z-index:99999; }
