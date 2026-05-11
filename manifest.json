@@ -1,14 +1,42 @@
 {
-  "name": "Ghi cân Sầu Riêng",
-  "short_name": "Ghi cân",
-  "start_url": "./",
+  "name": "Ghi Cân Sầu Riêng",
+  "short_name": "Ghi Cân",
+
+  "start_url": "./index.html",
+
+  "scope": "./",
+
   "display": "standalone",
-  "background_color": "#4DA6FF",
-  "theme_color": "#4DA6FF",
+
+  "orientation": "portrait",
+
+  "background_color": "#ffffff",
+
+  "theme_color": "#ffffff",
+
+  "description": "Ứng dụng ghi cân sầu riêng",
 
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+
   ]
 }
