@@ -1,34 +1,20 @@
-/* Service Worker - cache offline, auto-update */
-const CACHE_NAME = "sr-app-v1";
-const ASSETS = [
-  "./",
-  "./index.html",
-  "./style.css",
-  "./app.js",
-  "./manifest.json",
-  "./icon-192.png",
-  "./icon-512.png",
-  "./apple-touch-icon.png"
+const CACHE = "sr-cache-v1";
+const FILES = [
+  "index.html",
+  "style.css",
+  "app.js"
+  // KHÔNG CACHE manifest hoặc icon
 ];
 
-self.addEventListener("install", event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
-  self.skipWaiting();
-});
-
-self.addEventListener("activate", event => {
-  event.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.map(key => {
-      if (key !== CACHE_NAME) return caches.delete(key);
-    })))
+self.addEventListener("install", e => {
+  e.waitUntil(
+    caches.open(CACHE).then(cache => cache.addAll(FILES))
   );
-  self.clients.claim();
 });
 
+// DÙNG NETWORK FIRST để icon, manifest luôn cập nhật
 self.addEventListener("fetch", event => {
   event.respondWith(
-    caches.match(event.request).then(res => {
-      return res || fetch(event.request).catch(() => caches.match("./index.html"));
-    })
+    fetch(event.request).catch(() => caches.match(event.request))
   );
 });
