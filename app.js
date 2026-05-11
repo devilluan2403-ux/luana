@@ -1,8 +1,16 @@
 /* =========================================
-        CHẶN SAFARI - CHỈ CHẠY PWA
+        CHẶN IOS SAFARI - CHỈ CHẠY PWA
 ========================================= */
-if (!window.matchMedia('(display-mode: standalone)').matches &&
-    !navigator.standalone) {
+
+const isIOS = /iphone|ipad|ipod/i.test(
+    navigator.userAgent
+);
+
+if (
+    isIOS &&
+    !window.matchMedia('(display-mode: standalone)').matches &&
+    !navigator.standalone
+) {
 
     document.body.innerHTML = `
         <div style="padding:20px; font-size:22px; text-align:center;">
@@ -51,9 +59,10 @@ let records = JSON.parse(
     localStorage.getItem(LS_KEY) || "[]"
 );
 
-let currentType = null;
-let currentCat  = null;
-let inputValue  = "";
+let currentType  = null;
+let currentCat   = null;
+let currentPlate = "";
+let inputValue   = "";
 
 
 /* =========================================
@@ -66,18 +75,19 @@ const datePill  = document.getElementById("datePill");
 const typeBtns  = document.querySelectorAll(".type-btn");
 const catBtns   = document.querySelectorAll(".cat-btn");
 
+const plateInput = document.getElementById("plateInput");
+
 const display   = document.getElementById("display");
 
 /* SUMMARY */
-const sumA        = document.getElementById("sumA");
-const sumB        = document.getElementById("sumB");
-const sumC        = document.getElementById("sumC");
+const sumA      = document.getElementById("sumA");
+const sumB      = document.getElementById("sumB");
+const sumC      = document.getElementById("sumC");
 
-const sumXOAB     = document.getElementById("sumXOAB");
-const sumMUI      = document.getElementById("sumMUI");
-const sumKEMMUI   = document.getElementById("sumKEMMUI");
+const sumDAT    = document.getElementById("sumDAT");
+const sumKEM    = document.getElementById("sumKEM");
 
-const totalAll    = document.getElementById("totalAll");
+const totalAll  = document.getElementById("totalAll");
 
 /* HISTORY */
 const historyTable = document.getElementById("historyTable");
@@ -154,6 +164,21 @@ dateInput.addEventListener("change", ()=>{
 
 
 /* =========================================
+             NHẬP BIỂN SỐ XE
+========================================= */
+
+plateInput.addEventListener("input", ()=>{
+
+    currentPlate = plateInput.value
+        .trim()
+        .toUpperCase();
+
+    renderSummary();
+    renderHistory();
+});
+
+
+/* =========================================
                  CHỌN THÁI / RI
 ========================================= */
 
@@ -202,21 +227,23 @@ document.querySelectorAll(".num").forEach(btn=>{
 
     btn.addEventListener("click", ()=>{
 
-        if(!currentType || !currentCat){
+        if(
+            !currentType ||
+            !currentCat ||
+            !currentPlate
+        ){
 
-            alert("Vui lòng chọn THÁI/RI và loại hàng!");
+            alert("Vui lòng chọn THÁI/RI, loại hàng và nhập biển số xe!");
 
             return;
         }
 
         const val = btn.textContent;
 
-        /* không cho nhiều dấu . */
         if (val === "." && inputValue.includes(".")) {
             return;
         }
 
-        /* không cho bắt đầu bằng . */
         if (val === "." && inputValue === "") {
             return;
         }
@@ -229,6 +256,7 @@ document.querySelectorAll(".num").forEach(btn=>{
 
 
 /* BACKSPACE */
+
 document
 .getElementById("btnBack")
 .addEventListener("click", ()=>{
@@ -247,7 +275,13 @@ document
 .getElementById("btnEnter")
 .addEventListener("click", ()=>{
 
-    if(!inputValue || !currentType || !currentCat){
+    if(
+        !inputValue ||
+        !currentType ||
+        !currentCat ||
+        !currentPlate
+    ){
+        alert("Nhập đầy đủ thông tin!");
         return;
     }
 
@@ -262,6 +296,8 @@ document
         type: currentType,
 
         cat: currentCat,
+
+        plate: currentPlate,
 
         qty: Number(inputValue)
     };
@@ -313,19 +349,19 @@ function updateDisplay(){
 
 function renderSummary(){
 
-    let A       = 0;
-    let B       = 0;
-    let C       = 0;
+    let A   = 0;
+    let B   = 0;
+    let C   = 0;
 
-    let XOAB    = 0;
-    let MUI     = 0;
-    let KEMMUI  = 0;
+    let DAT = 0;
+    let KEM = 0;
 
     records.forEach(r=>{
 
         if(
             r.type === currentType &&
-            r.date === dateInput.value
+            r.date === dateInput.value &&
+            r.plate === currentPlate
         ){
 
             if(r.cat === "A") A += r.qty;
@@ -334,11 +370,9 @@ function renderSummary(){
 
             if(r.cat === "C") C += r.qty;
 
-            if(r.cat === "XOAB") XOAB += r.qty;
+            if(r.cat === "DAT") DAT += r.qty;
 
-            if(r.cat === "MUI") MUI += r.qty;
-
-            if(r.cat === "KEMMUI") KEMMUI += r.qty;
+            if(r.cat === "KEM") KEM += r.qty;
         }
     });
 
@@ -346,18 +380,16 @@ function renderSummary(){
     sumB.textContent = fmt(B);
     sumC.textContent = fmt(C);
 
-    sumXOAB.textContent   = fmt(XOAB);
-    sumMUI.textContent    = fmt(MUI);
-    sumKEMMUI.textContent = fmt(KEMMUI);
+    sumDAT.textContent = fmt(DAT);
+    sumKEM.textContent = fmt(KEM);
 
     totalAll.textContent =
         fmt(
             A +
             B +
             C +
-            XOAB +
-            MUI +
-            KEMMUI
+            DAT +
+            KEM
         );
 }
 
@@ -393,12 +425,13 @@ function renderHistory(){
 
     historyTable.innerHTML = "";
 
-    if (!currentType) return;
+    if (!currentType || !currentPlate) return;
 
     const list = records
         .filter(r => 
             r.type === currentType &&
-            r.date === dateInput.value
+            r.date === dateInput.value &&
+            r.plate === currentPlate
         )
         .sort((a,b)=> b.id - a.id);
 
@@ -411,11 +444,9 @@ function renderHistory(){
 
         C: list.filter(r => r.cat === "C"),
 
-        XOAB: list.filter(r => r.cat === "XOAB"),
+        DAT: list.filter(r => r.cat === "DAT"),
 
-        MUI: list.filter(r => r.cat === "MUI"),
-
-        KEMMUI: list.filter(r => r.cat === "KEMMUI")
+        KEM: list.filter(r => r.cat === "KEM")
     };
 
 
@@ -427,11 +458,9 @@ function renderHistory(){
 
         groups.C.length,
 
-        groups.XOAB.length,
+        groups.DAT.length,
 
-        groups.MUI.length,
-
-        groups.KEMMUI.length
+        groups.KEM.length
     );
 
 
@@ -444,9 +473,8 @@ function renderHistory(){
             "A",
             "B",
             "C",
-            "XOAB",
-            "MUI",
-            "KEMMUI"
+            "DAT",
+            "KEM"
         ].forEach(cat => {
 
             const td = document.createElement("td");
@@ -491,7 +519,11 @@ clearAllBtn.addEventListener("click", ()=>{
     if(confirm("Xoá toàn bộ dữ liệu của ngày này?")){
 
         records = records.filter(
-            r => r.date !== dateInput.value
+            r =>
+                !(
+                    r.date === dateInput.value &&
+                    r.plate === currentPlate
+                )
         );
 
         localStorage.setItem(
