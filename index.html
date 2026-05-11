@@ -1,24 +1,26 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <!-- BẮT BUỘC CHO iPHONE -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
   <title>Ghi Số Sầu Riêng</title>
 
-  <link rel="stylesheet" href="style.css" />
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
-  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Icon chuẩn iOS -->
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+
+  <!-- manifest -->
+  <link rel="manifest" href="manifest.json">
 </head>
 <body>
 
-<!-- CHẶN KHI KHÔNG CHẠY PWA -->
-<div id="notPwaMsg" class="hidden full-cover">
-  <div class="pw-box">Ứng dụng chỉ hoạt động khi được thêm vào Màn hình chính.<br><br>Chân thành cảm ơn.</div>
-</div>
-
-<!-- MÀN HÌNH MẬT KHẨU -->
+<!-- MÀN HÌNH NHẬP MẬT KHẨU -->
 <div id="passwordScreen" class="pw-screen hidden">
   <div class="pw-box">
     <h2>Nhập mật khẩu</h2>
@@ -29,160 +31,156 @@
 
 <main class="screen">
 
-  <!-- NGÀY THÁNG -->
+  <!-- NGÀY + THÁI/RI -->
   <section class="card card-top">
+
     <div class="date-wrapper">
       <div class="date-pill" id="datePill"></div>
       <input id="dateInput" type="date" class="date-input-real" />
     </div>
 
-    <!-- TOA SỐ -->
-    <div class="meta-row-full">
-      <label>Toa số <input id="toaInput" type="number" min="1" /></label>
-    </div>
-
-    <!-- TÊN KH -->
-    <div class="meta-row-full">
-      <label>Tên KH <input id="invoiceNameInput" type="text" placeholder="Tên khách (chọn từ DS KH hoặc nhập tay)" /></label>
-    </div>
-
-    <!-- THÁI / RI / KHÁCH / DS KH / XUẤT HĐ -->
-    <div class="type-row-full">
+    <div class="select-row">
       <button class="btn-select type-btn" data-type="thai">THÁI</button>
       <button class="btn-select type-btn" data-type="ri">RI</button>
-      <button class="btn-select" id="custInfoBtn">KHÁCH</button>
-      <button class="btn-select" id="custListBtn">DS KH</button>
-      <button class="btn-select" id="exportInvBtn">XUẤT HĐ</button>
     </div>
   </section>
 
-  <!-- TỔNG A/B/C/D/K -->
+  <!-- TỔNG -->
   <section class="card card-totals">
+
+    <!-- HÀNG 1 -->
     <div class="totals-row">
-      <div class="total-pill"><div class="label">A</div><div class="value" id="sumA">0</div></div>
-      <div class="total-pill"><div class="label">B</div><div class="value" id="sumB">0</div></div>
-      <div class="total-pill"><div class="label">C</div><div class="value" id="sumC">0</div></div>
-      <div class="total-pill"><div class="label">D</div><div class="value" id="sumD">0</div></div>
-      <div class="total-pill"><div class="label">K</div><div class="value" id="sumK">0</div></div>
+      <div class="total-pill">
+        <div class="label">A</div>
+        <div class="value" id="sumA">0</div>
+      </div>
+
+      <div class="total-pill">
+        <div class="label">B</div>
+        <div class="value" id="sumB">0</div>
+      </div>
+
+      <div class="total-pill">
+        <div class="label">C</div>
+        <div class="value" id="sumC">0</div>
+      </div>
     </div>
+
+    <!-- HÀNG 2 -->
+    <div class="totals-row">
+      <div class="total-pill">
+        <div class="label">XÔ AB</div>
+        <div class="value" id="sumXOAB">0</div>
+      </div>
+
+      <div class="total-pill">
+        <div class="label">MÚI</div>
+        <div class="value" id="sumMUI">0</div>
+      </div>
+
+      <div class="total-pill">
+        <div class="label">KEM MÚI</div>
+        <div class="value" id="sumKEMMUI">0</div>
+      </div>
+    </div>
+
+    <!-- TỔNG -->
     <div class="grand-pill">
       <div class="label">Tổng</div>
       <div class="value" id="totalAll">0</div>
     </div>
+
   </section>
 
-  <!-- A/B/C/D/K + ĐƠN GIÁ -->
+  <!-- CHỌN LOẠI HÀNG + DISPLAY -->
   <section class="card card-input">
+
+    <!-- A B C -->
     <div class="select-row">
       <button class="btn-select cat-btn" data-cat="A">A</button>
       <button class="btn-select cat-btn" data-cat="B">B</button>
       <button class="btn-select cat-btn" data-cat="C">C</button>
-      <button class="btn-select cat-btn" data-cat="D">D</button>
-      <button class="btn-select cat-btn" data-cat="K">K</button>
+    </div>
+
+    <!-- XÔ AB MÚI KEM MÚI -->
+    <div class="select-row">
+      <button class="btn-select cat-btn" data-cat="XOAB">XÔ AB</button>
+      <button class="btn-select cat-btn" data-cat="MUI">MÚI</button>
+      <button class="btn-select cat-btn" data-cat="KEMMUI">KEM MÚI</button>
     </div>
 
     <div class="display-slab" id="display">SỐ LƯỢNG</div>
 
-    <div class="price-toggle-row">
-      <button id="togglePriceBtn" class="small-btn">HIỆN/ẨN ĐƠN GIÁ</button>
-    </div>
-
-    <div class="prices-row hidden" id="pricesRow">
-      <label>A <input class="price-input" data-cat="A" type="number" min="0" /></label>
-      <label>B <input class="price-input" data-cat="B" type="number" min="0" /></label>
-      <label>C <input class="price-input" data-cat="C" type="number" min="0" /></label>
-      <label>D <input class="price-input" data-cat="D" type="number" min="0" /></label>
-      <label>K <input class="price-input" data-cat="K" type="number" min="0" /></label>
-    </div>
   </section>
 
   <!-- KEYPAD -->
-  <nav class="keypad" aria-label="Bàn phím số">
+  <nav class="keypad">
+
     <button class="kbtn num">1</button>
     <button class="kbtn num">2</button>
     <button class="kbtn num">3</button>
+
     <button class="kbtn num">4</button>
     <button class="kbtn num">5</button>
     <button class="kbtn num">6</button>
+
     <button class="kbtn num">7</button>
     <button class="kbtn num">8</button>
     <button class="kbtn num">9</button>
+
+    <!-- HÀNG CUỐI -->
     <button class="kbtn action" id="btnBack">⌫</button>
     <button class="kbtn num">0</button>
-    <button class="kbtn action" id="btnEnter">↵</button>
+    <button class="kbtn num">.</button>
+
+    <!-- ENTER -->
+    <button class="kbtn enter" id="btnEnter">↵</button>
+
   </nav>
 
   <!-- LỊCH SỬ -->
   <section class="card card-history">
+
     <header class="history-header">
-      <div>
+
+      <div class="top-history-title">
         <div class="hist-title">LỊCH SỬ NHẬP</div>
         <div id="historyDate">Ngày …</div>
       </div>
+
       <div class="history-actions">
-        <button id="clearAll" class="small-btn">XÓA</button>
+        <button id="clearAll" class="small-btn">XÓA DỮ LIỆU</button>
         <button id="toggleBtn" class="small-btn">ẨN</button>
       </div>
+
     </header>
+
     <div class="history-body" id="historyBody">
+
       <table class="history-table">
+
         <thead>
           <tr>
             <th>A</th>
             <th>B</th>
             <th>C</th>
-            <th>D</th>
-            <th>K</th>
+            <th>XÔ AB</th>
+            <th>MÚI</th>
+            <th>KEM MÚI</th>
           </tr>
         </thead>
+
         <tbody id="historyTable"></tbody>
+
       </table>
+
     </div>
+
   </section>
+
 </main>
 
-<!-- POPUP KHÁCH -->
-<div id="custPopup" class="modal hidden">
-  <div class="modal-inner">
-    <h3>Thông tin khách hàng</h3>
-    <label>Tên khách <input id="cust_name" type="text" /></label>
-    <label>SĐT <input id="cust_phone" type="tel" /></label>
-    <label>STK <input id="cust_stk" type="text" /></label>
-    <label>Tên TK <input id="cust_tkname" type="text" /></label>
-    <label>Ngân hàng <input id="cust_bank" type="text" /></label>
-    <div class="modal-actions">
-      <button id="saveCustBtn" class="small-btn">LƯU</button>
-      <button id="closeCustBtn" class="small-btn">ĐÓNG</button>
-    </div>
-  </div>
-</div>
-
-<!-- POPUP DANH SÁCH KHÁCH -->
-<div id="custListPopup" class="modal hidden">
-  <div class="modal-inner">
-    <h3>Danh sách khách hàng</h3>
-
-    <input id="searchCust" placeholder="Tìm khách..." style="width:100%;padding:8px;margin-bottom:10px;border-radius:8px;border:1px solid #ccc;">
-
-    <div id="custListBox" style="max-height:300px; overflow-y:auto;"></div>
-
-    <div class="modal-actions" style="margin-top:15px;text-align:right;">
-      <button id="closeCustListBtn" class="small-btn">ĐÓNG</button>
-    </div>
-  </div>
-</div>
-
-<!-- POPUP HÓA ĐƠN -->
-<div id="invPopup" class="modal hidden">
-  <div class="modal-inner invoice" id="invoiceContent"></div>
-
-  <!-- Nút nằm dưới hóa đơn -->
-  <div class="modal-actions inv-actions">
-    <button id="printInvBtn" class="small-btn">IN / XUẤT PDF</button>
-    <button id="closeInvBtn" class="small-btn">ĐÓNG</button>
-  </div>
-</div>
-
 <script src="app.js"></script>
+
 </body>
 </html>
