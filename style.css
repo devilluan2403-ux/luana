@@ -9,8 +9,17 @@
   --kbd:#e9e9e9;
 }
 
-*{box-sizing:border-box;margin:0;padding:0}
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html{
+  -webkit-text-size-adjust:100%;
+}
+
 body{
+  margin:0;
   font-family:Inter, Arial, sans-serif;
   background:linear-gradient(180deg,var(--bg),#fbfcff);
   padding:12px;
@@ -18,123 +27,386 @@ body{
 }
 
 .screen{
-  max-width:480px;
+  max-width:420px;
   margin:auto;
 }
 
 .card{
-  background:var(--card);
-  border-radius:12px;
-  padding:14px;
-  box-shadow:0 4px 14px rgba(0,0,0,0.08);
-  margin-bottom:12px;
+  background:#fff;
+  border-radius:18px;
+  padding:16px;
+  box-shadow:0 8px 22px rgba(20,30,60,0.06);
+  margin-bottom:18px;
+  overflow:hidden;
 }
 
-/* NGÀY */
-.date-wrapper{ position:relative; }
+/* =========================================
+                  DATE
+========================================= */
+
+.date-wrapper{
+  position:relative;
+}
+
 .date-pill{
   background:var(--muted);
-  padding:14px;
-  border-radius:10px;
-  font-weight:600;
-  text-align:center;
-  margin-bottom:10px;
-}
-.date-input-real{ position:absolute; width:100%; height:100%; left:0; top:0; opacity:0; cursor:pointer; }
-
-/* TOA + TÊN KH */
-.meta-row-full{ margin-top:8px; display:flex; }
-.meta-row-full label{ flex:1; font-size:15px; font-weight:600; }
-.meta-row-full input{ width:100%; margin-top:4px; padding:8px; border-radius:8px; border:1px solid #ccc; font-size:15px; }
-
-/* THÁI/RI/KHÁCH/DS/XUẤT */
-.type-row-full{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:12px; }
-.btn-select{ background:white; border:1px solid var(--pill-border); padding:12px 6px; border-radius:10px; font-size:18px; font-weight:700; text-align:center; }
-.btn-select.active{ background:var(--accent); color:#fff; border-color:var(--accent-strong); }
-
-/* SUMMARY */
-.totals-row{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
-.total-pill{ background:#ececec; padding:10px; text-align:center; border-radius:10px; font-size:15px; }
-.total-pill .value{ font-size:18px; font-weight:800; }
-.grand-pill{ background:#ececec; padding:12px; border-radius:10px; margin-top:10px; text-align:center; font-weight:800; font-size:18px; }
-
-/* A/B/C/D/K */
-.select-row{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
-.display-slab{ margin-top:12px; background:#fff; border:2px solid var(--pill-border); text-align:center; padding:16px; border-radius:10px; font-size:26px; font-weight:700; color:#cfcfcf; }
-
-/* ĐƠN GIÁ */
-.price-toggle-row{ margin-top:10px; }
-.small-btn{ border:1px solid #ccc; background:#fff; padding:8px 12px; border-radius:8px; font-weight:700; font-size:14px; }
-.prices-row{ margin-top:10px; display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
-.prices-row label{ font-size:14px; font-weight:600; }
-.prices-row input{ width:100%; margin-top:4px; padding:6px; border-radius:8px; border:1px solid #ccc; }
-
-/* KEYPAD */
-.keypad{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }
-.kbtn{ background:var(--kbd); padding:16px 0; border-radius:12px; border:none; font-size:22px; font-weight:700; }
-
-/* LỊCH SỬ */
-.history-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-.hist-title{ font-size:18px; font-weight:700; }
-#historyDate{ font-size:13px; color:#666; }
-.history-table{ width:100%; border-collapse:collapse; }
-.history-table th{ background:#f1f1f1; padding:10px; font-size:16px; }
-.history-table td{ padding:10px; text-align:center; border-bottom:1px solid #eee; font-size:18px; font-weight:700; }
-.del-btn{ margin-left:6px; color:#e3342f; cursor:pointer; }
-
-/* POPUP */
-.modal{ position:fixed; inset:0; background:rgba(0,0,0,0.35); display:flex; justify-content:center; align-items:center; z-index:9999; }
-.hidden{ display:none !important; }
-
-.modal-inner{
-  background:white;
   padding:16px;
   border-radius:12px;
-  width:90%;
-  max-width:420px;
-  max-height:80vh;
-  overflow:auto;
+  font-weight:600;
+  margin-bottom:12px;
+  text-align:center;
+  font-size:16px;
 }
 
-/* ===============================
-   GIAO DIỆN HÓA ĐƠN (ĐÃ SỬA)
-   =============================== */
-
-.modal-inner.invoice{
-  position:relative;
-  max-height:70vh;
-  overflow-y:auto;
-  padding-bottom:80px; /* chừa chỗ cho nút ở đáy */
-}
-
-/* Vùng chứa nút – đặt góc phải dưới */
-.inv-actions{
+.date-input-real{
   position:absolute;
-  bottom:10px;
-  right:10px;
+  width:100%;
+  height:100%;
+  top:0;
+  left:0;
+  opacity:0;
+  cursor:pointer;
+}
+
+/* =========================================
+                BUTTON ROW
+========================================= */
+
+.select-row{
   display:flex;
   gap:10px;
-  justify-content:flex-end;
+  margin-bottom:10px;
 }
 
-.inv-actions .small-btn{
-  font-size:16px;
-  padding:10px 16px;
-  border-radius:8px;
+.btn-select{
+  flex:1;
+  min-width:0;
+  padding:14px 8px;
+  border-radius:12px;
   background:white;
-  border:1px solid #ccc;
+  border:1px solid var(--pill-border);
+  font-weight:700;
+  font-size:20px;
+  color:#111;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+
+  word-break:break-word;
+  line-height:1.2;
+}
+
+.btn-select.active{
+  background:var(--accent);
+  color:white;
+  border-color:var(--accent-strong);
+}
+
+/* =========================================
+                  TOTAL
+========================================= */
+
+.totals-row{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.total-pill{
+  background:#eee;
+  border-radius:12px;
+  text-align:center;
+  padding:12px 8px;
+  min-width:0;
+}
+
+.total-pill .label{
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:6px;
+  line-height:1.2;
+  word-break:break-word;
+}
+
+.total-pill .value{
+  font-size:18px;
+  font-weight:800;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.grand-pill{
+  background:#eee;
+  text-align:center;
+  padding:14px;
+  border-radius:12px;
+  margin-top:10px;
+}
+
+.grand-pill .label{
+  font-size:14px;
+  font-weight:700;
+  margin-bottom:4px;
+}
+
+.grand-pill .value{
+  font-size:24px;
+  font-weight:800;
+}
+
+/* =========================================
+                  DISPLAY
+========================================= */
+
+.display-slab{
+  background:white;
+  border:2px solid var(--pill-border);
+  padding:18px 10px;
+  text-align:center;
+  font-size:28px;
+  border-radius:12px;
+  margin-top:12px;
+  color:#cfcfcf;
+  font-weight:700;
+
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* =========================================
+                  KEYPAD
+========================================= */
+
+.keypad{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:16px;
+}
+
+.kbtn{
+  background:var(--kbd);
+  padding:18px 0;
+  border-radius:16px;
+  font-size:22px;
+  font-weight:800;
+  border:none;
+  color:black;
+
+  min-height:60px;
+
+  touch-action:manipulation;
+}
+
+.kbtn:active{
+  transform:scale(0.98);
+}
+
+.kbtn.enter{
+  grid-column:span 3;
+  background:#111;
+  color:#fff;
+  font-size:22px;
+  padding:20px 0;
+}
+
+/* =========================================
+                  HISTORY
+========================================= */
+
+.card-history{
+  overflow-x:auto;
+}
+
+.history-header{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding-bottom:10px;
+  align-items:flex-start;
+}
+
+.top-history-title{
+  min-width:0;
+}
+
+.hist-title{
+  font-size:18px;
   font-weight:700;
 }
 
-/* PASSWORD */
-.pw-screen{ position:fixed; inset:0; background:white; display:flex; justify-content:center; align-items:center; z-index:99999; }
-.pw-box{ background:white; padding:20px; border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,0.15); text-align:center; width:85%; max-width:320px; }
-.pw-box input{ width:100%; margin-top:10px; padding:12px; border-radius:8px; border:1px solid #ccc; font-size:18px; }
-.pw-box button{ margin-top:12px; width:100%; padding:12px; background:var(--accent-strong); color:white; border:none; border-radius:8px; font-size:18px; font-weight:700; }
+#historyDate{
+  font-size:13px;
+  color:#777;
+  margin-top:3px;
+}
 
-/* PRINT */
-@media print{
-  body *{ visibility:hidden }
-  #invoiceContent, #invoiceContent *{ visibility:visible }
-  #invoiceContent{ position:fixed; left:0; top:0; width:100% }
+.history-actions{
+  display:flex;
+  gap:8px;
+  flex-shrink:0;
+}
+
+.small-btn{
+  background:white;
+  border:1px solid #ddd;
+  padding:8px 10px;
+  border-radius:8px;
+  font-size:11px;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.history-table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+  table-layout:fixed;
+}
+
+.history-table th{
+  background:#f6f6f6;
+  padding:10px 4px;
+  font-size:12px;
+  word-break:break-word;
+}
+
+.history-table td{
+  padding:10px 4px;
+  text-align:center;
+  font-size:14px;
+  border-bottom:1px solid #eee;
+  font-weight:700;
+
+  word-break:break-word;
+}
+
+.del-btn{
+  display:block;
+  margin-top:4px;
+  color:#d63031;
+  cursor:pointer;
+  font-size:12px;
+}
+
+.hidden{
+  display:none !important;
+}
+
+/* =========================================
+              PASSWORD SCREEN
+========================================= */
+
+.pw-screen{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:white;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  z-index:9999;
+  padding:20px;
+}
+
+.pw-box{
+  width:100%;
+  max-width:320px;
+
+  padding:24px;
+
+  background:white;
+
+  border-radius:12px;
+
+  text-align:center;
+
+  box-shadow:0 8px 20px rgba(0,0,0,0.15);
+}
+
+.pw-box h2{
+  margin-top:0;
+}
+
+.pw-box input{
+  width:100%;
+  padding:14px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  margin-bottom:16px;
+  text-align:center;
+  font-size:20px;
+}
+
+.pw-box button{
+  width:100%;
+  padding:14px;
+  background:#238ce6;
+  color:white;
+  border:none;
+  border-radius:10px;
+  font-size:20px;
+  font-weight:700;
+}
+
+/* =========================================
+                IOS FIX
+========================================= */
+
+button,
+.btn-select,
+.kbtn,
+input{
+  appearance:none;
+  -webkit-appearance:none;
+  border-radius:12px;
+}
+
+input,
+button{
+  font-family:inherit;
+}
+
+/* =========================================
+             iPHONE NHỎ
+========================================= */
+
+@media (max-width:390px){
+
+  .btn-select{
+    font-size:16px;
+    padding:12px 6px;
+  }
+
+  .total-pill .label{
+    font-size:11px;
+  }
+
+  .total-pill .value{
+    font-size:15px;
+  }
+
+  .display-slab{
+    font-size:24px;
+  }
+
+  .kbtn{
+    font-size:20px;
+    min-height:56px;
+  }
+
+  .history-table th{
+    font-size:10px;
+  }
+
+  .history-table td{
+    font-size:12px;
+  }
 }
