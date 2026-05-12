@@ -38,7 +38,7 @@ const pwLoginBtn = document.getElementById("pwLoginBtn");
 
 if (!localStorage.getItem("auth_ok")) {
 
-  pwScreen.classList.remove("hidden");
+  pwScreen?.classList.remove("hidden");
 }
 
 pwLoginBtn?.addEventListener("click", ()=>{
@@ -108,7 +108,6 @@ const totalAll  = document.getElementById("totalAll");
 /* HISTORY */
 
 const historyTable = document.getElementById("historyTable");
-const historyBody  = document.getElementById("historyBody");
 
 const clearAllBtn  = document.getElementById("clearAll");
 
@@ -117,9 +116,9 @@ const historyDate  = document.getElementById("historyDate");
 
 /* POPUP */
 
-const openHistoryBtn = document.getElementById("openHistory");
+const openHistoryBtn  = document.getElementById("openHistory");
 const closeHistoryBtn = document.getElementById("closeHistory");
-const historyPopup = document.getElementById("historyPopup");
+const historyPopup    = document.getElementById("historyPopup");
 
 
 /* =========================================
@@ -552,7 +551,6 @@ function renderHistory(){
 
     const row = document.createElement("tr");
 
-
     [
       "A",
       "B",
@@ -563,7 +561,6 @@ function renderHistory(){
 
       const td =
         document.createElement("td");
-
 
       if (groups[cat][i]) {
 
@@ -655,6 +652,13 @@ clearAllBtn?.addEventListener("click", ()=>{
 ========================================= */
 
 openHistoryBtn?.addEventListener("click", ()=>{
+
+  if(!currentType || !currentPlate){
+
+    alert("Vui lòng chọn THÁI/RI và nhập biển số xe!");
+
+    return;
+  }
 
   historyPopup.classList.remove("hidden");
 });
