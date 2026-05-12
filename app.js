@@ -3,21 +3,26 @@
 ========================================= */
 
 const isIOS = /iphone|ipad|ipod/i.test(
-    navigator.userAgent
+  navigator.userAgent
 );
 
 if (
-    isIOS &&
-    !window.matchMedia('(display-mode: standalone)').matches &&
-    !navigator.standalone
+  isIOS &&
+  !window.matchMedia('(display-mode: standalone)').matches &&
+  !navigator.standalone
 ) {
 
-    document.body.innerHTML = `
-        <div style="padding:20px; font-size:22px; text-align:center;">
-            Hỏng có gì để xem hết luôn á.<br><br>
-            Liu liu.
-        </div>
-    `;
+  document.body.innerHTML = `
+    <div style="
+      padding:20px;
+      font-size:22px;
+      text-align:center;
+      font-weight:700;
+    ">
+      Hỏng có gì để xem hết luôn á.<br><br>
+      Liu liu.
+    </div>
+  `;
 }
 
 
@@ -33,21 +38,21 @@ const pwLoginBtn = document.getElementById("pwLoginBtn");
 
 if (!localStorage.getItem("auth_ok")) {
 
-    pwScreen.classList.remove("hidden");
+  pwScreen.classList.remove("hidden");
 }
 
-pwLoginBtn.addEventListener("click", ()=>{
+pwLoginBtn?.addEventListener("click", ()=>{
 
-    if (pwInput.value.trim() === APP_PASSWORD) {
+  if (pwInput.value.trim() === APP_PASSWORD) {
 
-        localStorage.setItem("auth_ok", "1");
+    localStorage.setItem("auth_ok", "1");
 
-        pwScreen.classList.add("hidden");
+    pwScreen.classList.add("hidden");
 
-    } else {
+  } else {
 
-        alert("Sai mật khẩu!");
-    }
+    alert("Sai mật khẩu!");
+  }
 });
 
 
@@ -58,7 +63,7 @@ pwLoginBtn.addEventListener("click", ()=>{
 const LS_KEY = "sr_records";
 
 let records = JSON.parse(
-    localStorage.getItem(LS_KEY) || "[]"
+  localStorage.getItem(LS_KEY) || "[]"
 );
 
 let currentType  = null;
@@ -105,10 +110,16 @@ const totalAll  = document.getElementById("totalAll");
 const historyTable = document.getElementById("historyTable");
 const historyBody  = document.getElementById("historyBody");
 
-const toggleBtn    = document.getElementById("toggleBtn");
 const clearAllBtn  = document.getElementById("clearAll");
 
 const historyDate  = document.getElementById("historyDate");
+
+
+/* POPUP */
+
+const openHistoryBtn = document.getElementById("openHistory");
+const closeHistoryBtn = document.getElementById("closeHistory");
+const historyPopup = document.getElementById("historyPopup");
 
 
 /* =========================================
@@ -117,9 +128,9 @@ const historyDate  = document.getElementById("historyDate");
 
 function fmt(n){
 
-    return Number(n).toLocaleString("vi-VN", {
-        maximumFractionDigits: 2
-    });
+  return Number(n).toLocaleString("vi-VN", {
+    maximumFractionDigits: 2
+  });
 }
 
 
@@ -129,72 +140,74 @@ function fmt(n){
 
 function toLocalISO(d){
 
-    return new Date(
-        d.getTime() - d.getTimezoneOffset()*60000
-    ).toISOString().slice(0,10);
+  return new Date(
+    d.getTime() - d.getTimezoneOffset()*60000
+  ).toISOString().slice(0,10);
 }
 
 const savedDate = localStorage.getItem("last_date");
 
 if (savedDate) {
 
-    dateInput.value = savedDate;
+  dateInput.value = savedDate;
 
 } else {
 
-    dateInput.value = toLocalISO(new Date());
+  dateInput.value = toLocalISO(new Date());
 
-    localStorage.setItem(
-        "last_date",
-        dateInput.value
-    );
+  localStorage.setItem(
+    "last_date",
+    dateInput.value
+  );
 }
 
 
-/* KHO */
+/* =========================================
+                    KHO
+========================================= */
 
 khoInput.value =
-    localStorage.getItem("last_kho") || "";
+  localStorage.getItem("last_kho") || "";
 
 khoInput.addEventListener("input", ()=>{
 
-    localStorage.setItem(
-        "last_kho",
-        khoInput.value
-    );
+  localStorage.setItem(
+    "last_kho",
+    khoInput.value
+  );
 });
 
 
 function fDate(d){
 
-    d = new Date(d);
+  d = new Date(d);
 
-    return `Ngày ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+  return `Ngày ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
 }
 
 datePill.textContent =
-    fDate(dateInput.value);
+  fDate(dateInput.value);
 
 historyDate.textContent =
-    fDate(dateInput.value);
+  fDate(dateInput.value);
 
 
 dateInput.addEventListener("change", ()=>{
 
-    localStorage.setItem(
-        "last_date",
-        dateInput.value
-    );
+  localStorage.setItem(
+    "last_date",
+    dateInput.value
+  );
 
-    datePill.textContent =
-        fDate(dateInput.value);
+  datePill.textContent =
+    fDate(dateInput.value);
 
-    historyDate.textContent =
-        fDate(dateInput.value);
+  historyDate.textContent =
+    fDate(dateInput.value);
 
-    renderSummary();
+  renderSummary();
 
-    renderHistory();
+  renderHistory();
 });
 
 
@@ -204,13 +217,13 @@ dateInput.addEventListener("change", ()=>{
 
 plateInput.addEventListener("input", ()=>{
 
-    currentPlate = plateInput.value
-        .trim()
-        .toUpperCase();
+  currentPlate = plateInput.value
+    .trim()
+    .toUpperCase();
 
-    renderSummary();
+  renderSummary();
 
-    renderHistory();
+  renderHistory();
 });
 
 
@@ -220,11 +233,11 @@ plateInput.addEventListener("input", ()=>{
 
 sttInput.addEventListener("input", ()=>{
 
-    currentSTT = sttInput.value.trim();
+  currentSTT = sttInput.value.trim();
 
-    renderSummary();
+  renderSummary();
 
-    renderHistory();
+  renderHistory();
 });
 
 
@@ -234,21 +247,21 @@ sttInput.addEventListener("input", ()=>{
 
 typeBtns.forEach(btn=>{
 
-    btn.addEventListener("click", ()=>{
+  btn.addEventListener("click", ()=>{
 
-        typeBtns.forEach(x=>{
+    typeBtns.forEach(x=>{
 
-            x.classList.remove("active");
-        });
-
-        btn.classList.add("active");
-
-        currentType = btn.dataset.type;
-
-        renderSummary();
-
-        renderHistory();
+      x.classList.remove("active");
     });
+
+    btn.classList.add("active");
+
+    currentType = btn.dataset.type;
+
+    renderSummary();
+
+    renderHistory();
+  });
 });
 
 
@@ -258,17 +271,17 @@ typeBtns.forEach(btn=>{
 
 catBtns.forEach(btn=>{
 
-    btn.addEventListener("click", ()=>{
+  btn.addEventListener("click", ()=>{
 
-        catBtns.forEach(x=>{
+    catBtns.forEach(x=>{
 
-            x.classList.remove("active");
-        });
-
-        btn.classList.add("active");
-
-        currentCat = btn.dataset.cat;
+      x.classList.remove("active");
     });
+
+    btn.classList.add("active");
+
+    currentCat = btn.dataset.cat;
+  });
 });
 
 
@@ -278,53 +291,55 @@ catBtns.forEach(btn=>{
 
 document.querySelectorAll(".num").forEach(btn=>{
 
-    btn.addEventListener("click", ()=>{
+  btn.addEventListener("click", ()=>{
 
-        if(
-            !currentType ||
-            !currentCat ||
-            !currentPlate
-        ){
+    if(
+      !currentType ||
+      !currentCat ||
+      !currentPlate
+    ){
 
-            alert(
-                "Vui lòng chọn THÁI/RI, loại hàng và nhập biển số xe!"
-            );
+      alert(
+        "Vui lòng chọn THÁI/RI, loại hàng và nhập biển số xe!"
+      );
 
-            return;
-        }
+      return;
+    }
 
-        const val = btn.textContent;
+    const val = btn.textContent;
 
-        if (
-            val === "." &&
-            inputValue.includes(".")
-        ) {
-            return;
-        }
+    if (
+      val === "." &&
+      inputValue.includes(".")
+    ) {
+      return;
+    }
 
-        if (
-            val === "." &&
-            inputValue === ""
-        ) {
-            return;
-        }
+    if (
+      val === "." &&
+      inputValue === ""
+    ) {
+      return;
+    }
 
-        inputValue += val;
+    inputValue += val;
 
-        updateDisplay();
-    });
+    updateDisplay();
+  });
 });
 
 
-/* BACKSPACE */
+/* =========================================
+                 BACKSPACE
+========================================= */
 
 document
 .getElementById("btnBack")
 .addEventListener("click", ()=>{
 
-    inputValue = inputValue.slice(0,-1);
+  inputValue = inputValue.slice(0,-1);
 
-    updateDisplay();
+  updateDisplay();
 });
 
 
@@ -336,55 +351,51 @@ document
 .getElementById("btnEnter")
 .addEventListener("click", ()=>{
 
-    if(
-        !inputValue ||
-        !currentType ||
-        !currentCat ||
-        !currentPlate
-    ){
+  if(
+    !inputValue ||
+    !currentType ||
+    !currentCat ||
+    !currentPlate
+  ){
 
-        alert("Nhập đầy đủ thông tin!");
+    alert("Nhập đầy đủ thông tin!");
 
-        return;
-    }
+    return;
+  }
 
-    const rec = {
+  const rec = {
 
-        id: Date.now(),
+    id: Date.now(),
 
-        group: Date.now(),
+    date: dateInput.value,
 
-        date: dateInput.value,
+    kho: khoInput.value.trim(),
 
-        kho: khoInput.value.trim(),
+    type: currentType,
 
-        type: currentType,
+    cat: currentCat,
 
-        cat: currentCat,
+    plate: currentPlate,
 
-        plate: currentPlate,
+    stt: currentSTT,
 
-        stt: currentSTT,
+    qty: Number(inputValue)
+  };
 
-        qty: Number(inputValue)
-    };
+  records.push(rec);
 
-    records.push(rec);
+  localStorage.setItem(
+    LS_KEY,
+    JSON.stringify(records)
+  );
 
-    localStorage.setItem(
-        LS_KEY,
-        JSON.stringify(records)
-    );
+  inputValue = "";
 
-    /* chỉ xoá số lượng */
+  updateDisplay();
 
-    inputValue = "";
+  renderSummary();
 
-    updateDisplay();
-
-    renderSummary();
-
-    renderHistory();
+  renderHistory();
 });
 
 
@@ -394,22 +405,22 @@ document
 
 function updateDisplay(){
 
-    if(!inputValue){
+  if(!inputValue){
 
-        display.textContent = "SỐ LƯỢNG";
+    display.textContent = "SỐ LƯỢNG";
 
-        display.style.color = "#cfcfcf";
+    display.style.color = "#cfcfcf";
 
-    } else {
+  } else {
 
-        display.textContent =
-            Number(inputValue).toLocaleString("vi-VN", {
+    display.textContent =
+      Number(inputValue).toLocaleString("vi-VN", {
 
-                maximumFractionDigits: 2
-            });
+        maximumFractionDigits: 2
+      });
 
-        display.style.color = "#111";
-    }
+    display.style.color = "#111";
+  }
 }
 
 
@@ -419,52 +430,46 @@ function updateDisplay(){
 
 function renderSummary(){
 
-    let A   = 0;
-    let B   = 0;
-    let C   = 0;
+  let A   = 0;
+  let B   = 0;
+  let C   = 0;
 
-    let DAT = 0;
-    let KEM = 0;
+  let DAT = 0;
+  let KEM = 0;
 
-    records.forEach(r=>{
+  records.forEach(r=>{
 
-        if(
-            r.type === currentType &&
-            r.date === dateInput.value &&
-            r.plate === currentPlate
-        ){
+    if(
+      r.type === currentType &&
+      r.date === dateInput.value &&
+      r.plate === currentPlate
+    ){
 
-            if(r.cat === "A") A += r.qty;
+      if(r.cat === "A") A += r.qty;
 
-            if(r.cat === "B") B += r.qty;
+      if(r.cat === "B") B += r.qty;
 
-            if(r.cat === "C") C += r.qty;
+      if(r.cat === "C") C += r.qty;
 
-            if(r.cat === "DAT") DAT += r.qty;
+      if(r.cat === "DAT") DAT += r.qty;
 
-            if(r.cat === "KEM") KEM += r.qty;
-        }
-    });
+      if(r.cat === "KEM") KEM += r.qty;
+    }
+  });
 
-    sumA.textContent = fmt(A);
+  sumA.textContent = fmt(A);
 
-    sumB.textContent = fmt(B);
+  sumB.textContent = fmt(B);
 
-    sumC.textContent = fmt(C);
+  sumC.textContent = fmt(C);
 
-    sumDAT.textContent = fmt(DAT);
+  sumDAT.textContent = fmt(DAT);
 
-    sumKEM.textContent = fmt(KEM);
+  sumKEM.textContent = fmt(KEM);
 
-    totalAll.textContent =
-
-        fmt(
-            A +
-            B +
-            C +
-            DAT +
-            KEM
-        );
+  totalAll.textContent = fmt(
+    A + B + C + DAT + KEM
+  );
 }
 
 
@@ -474,26 +479,26 @@ function renderSummary(){
 
 function deleteRecord(id){
 
-    if (
-        !confirm(
-            "Bạn có chắc muốn xoá dữ liệu này không?"
-        )
-    ) {
-        return;
-    }
+  if (
+    !confirm(
+      "Bạn có chắc muốn xoá dữ liệu này không?"
+    )
+  ) {
+    return;
+  }
 
-    records = records.filter(
-        r => r.id !== id
-    );
+  records = records.filter(
+    r => r.id !== id
+  );
 
-    localStorage.setItem(
-        LS_KEY,
-        JSON.stringify(records)
-    );
+  localStorage.setItem(
+    LS_KEY,
+    JSON.stringify(records)
+  );
 
-    renderSummary();
+  renderSummary();
 
-    renderHistory();
+  renderHistory();
 }
 
 
@@ -503,118 +508,112 @@ function deleteRecord(id){
 
 function renderHistory(){
 
-    historyTable.innerHTML = "";
+  historyTable.innerHTML = "";
 
-    if (!currentType || !currentPlate) return;
+  if (!currentType || !currentPlate) return;
 
-    const list = records
+  const list = records
 
-        .filter(r =>
+    .filter(r =>
 
-            r.type === currentType &&
+      r.type === currentType &&
+      r.date === dateInput.value &&
+      r.plate === currentPlate
+    )
 
-            r.date === dateInput.value &&
-
-            r.plate === currentPlate
-        )
-
-        .sort((a,b)=> b.id - a.id);
+    .sort((a,b)=> b.id - a.id);
 
 
-    const groups = {
+  const groups = {
 
-        A: list.filter(r => r.cat === "A"),
+    A: list.filter(r => r.cat === "A"),
 
-        B: list.filter(r => r.cat === "B"),
+    B: list.filter(r => r.cat === "B"),
 
-        C: list.filter(r => r.cat === "C"),
+    C: list.filter(r => r.cat === "C"),
 
-        DAT: list.filter(r => r.cat === "DAT"),
+    DAT: list.filter(r => r.cat === "DAT"),
 
-        KEM: list.filter(r => r.cat === "KEM")
-    };
-
-
-    const maxRows = Math.max(
-
-        groups.A.length,
-
-        groups.B.length,
-
-        groups.C.length,
-
-        groups.DAT.length,
-
-        groups.KEM.length
-    );
+    KEM: list.filter(r => r.cat === "KEM")
+  };
 
 
-    for (let i = 0; i < maxRows; i++) {
+  const maxRows = Math.max(
 
-        const row = document.createElement("tr");
-
-
-        [
-            "A",
-            "B",
-            "C",
-            "DAT",
-            "KEM"
-        ].forEach(cat => {
-
-            const td =
-                document.createElement("td");
+    groups.A.length,
+    groups.B.length,
+    groups.C.length,
+    groups.DAT.length,
+    groups.KEM.length
+  );
 
 
-            if (groups[cat][i]) {
+  for (let i = 0; i < maxRows; i++) {
 
-                const item =
-                    groups[cat][i];
+    const row = document.createElement("tr");
 
-                td.innerHTML = `
-                    <div style="
-                        font-weight:700;
-                    ">
-                        ${fmt(item.qty)}
-                    </div>
 
-                    <div style="
-                        font-size:11px;
-                        color:#777;
-                        margin-top:3px;
-                    ">
-                        ${item.plate || ""}
-                    </div>
+    [
+      "A",
+      "B",
+      "C",
+      "DAT",
+      "KEM"
+    ].forEach(cat => {
 
-                    <div style="
-                        font-size:11px;
-                        color:#999;
-                    ">
-                        STT:
-                        ${item.stt || "-"}
-                    </div>
-                `;
+      const td =
+        document.createElement("td");
 
-                const del =
-                    document.createElement("span");
 
-                del.textContent = " X";
+      if (groups[cat][i]) {
 
-                del.className = "del-btn";
+        const item =
+          groups[cat][i];
 
-                del.onclick = ()=>{
+        td.innerHTML = `
+          <div style="
+            font-weight:700;
+            font-size:15px;
+          ">
+            ${fmt(item.qty)}
+          </div>
 
-                    deleteRecord(item.id);
-                };
+          <div style="
+            font-size:11px;
+            color:#777;
+            margin-top:3px;
+          ">
+            ${item.plate || ""}
+          </div>
 
-                td.appendChild(del);
-            }
+          <div style="
+            font-size:11px;
+            color:#999;
+          ">
+            STT: ${item.stt || "-"}
+          </div>
+        `;
 
-            row.appendChild(td);
-        });
+        const del =
+          document.createElement("span");
 
-        historyTable.appendChild(row);
-    }
+        del.textContent = "X";
+
+        del.className = "del-btn";
+
+        del.onclick = ()=>{
+
+          deleteRecord(item.id);
+        };
+
+        td.appendChild(del);
+      }
+
+      row.appendChild(td);
+    });
+
+    historyTable.appendChild(row);
+  }
 }
 
 
@@ -622,55 +621,60 @@ function renderHistory(){
                  CLEAR ALL
 ========================================= */
 
-clearAllBtn.addEventListener("click", ()=>{
+clearAllBtn?.addEventListener("click", ()=>{
 
-    if(
-        confirm(
-            "Xoá toàn bộ dữ liệu của ngày này?"
+  if(
+    confirm(
+      "Xoá toàn bộ dữ liệu của xe này?"
+    )
+  ){
+
+    records = records.filter(
+      r =>
+        !(
+          r.date === dateInput.value &&
+          r.plate === currentPlate &&
+          r.type === currentType
         )
-    ){
+    );
 
-        records = records.filter(
-            r =>
-                !(
-                    r.date === dateInput.value &&
-                    r.plate === currentPlate
-                )
-        );
+    localStorage.setItem(
+      LS_KEY,
+      JSON.stringify(records)
+    );
 
-        localStorage.setItem(
-            LS_KEY,
-            JSON.stringify(records)
-        );
+    renderSummary();
 
-        renderSummary();
-
-        renderHistory();
-    }
+    renderHistory();
+  }
 });
 
 
 /* =========================================
-                   TOGGLE
+               POPUP HISTORY
 ========================================= */
 
-toggleBtn.addEventListener("click", ()=>{
+openHistoryBtn?.addEventListener("click", ()=>{
 
-    historyBody.classList.toggle("hidden");
-
-    toggleBtn.textContent =
-
-        historyBody.classList.contains("hidden")
-
-            ? "HIỆN"
-
-            : "ẨN";
+  historyPopup.classList.remove("hidden");
 });
 
 
-/* =========================================
-                    INIT
-========================================= */
+closeHistoryBtn?.addEventListener("click", ()=>{
+
+  historyPopup.classList.add("hidden");
+});
+
+
+historyPopup?.addEventListener("click", e=>{
+
+  if(e.target === historyPopup){
+
+    historyPopup.classList.add("hidden");
+  }
+});
+
+
 /* =========================================
       CHẶN KÉO XUỐNG RELOAD ANDROID
 ========================================= */
@@ -709,6 +713,11 @@ document.addEventListener(
   },
   { passive:false }
 );
+
+
+/* =========================================
+                    INIT
+========================================= */
 
 updateDisplay();
 
