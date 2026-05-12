@@ -2,6 +2,8 @@
   "name": "Ghi Cân Sầu Riêng",
   "short_name": "Ghi Cân",
 
+  "id": "/",
+
   "start_url": "./index.html",
 
   "scope": "./",
@@ -15,6 +17,17 @@
   "theme_color": "#ffffff",
 
   "description": "Ứng dụng ghi cân sầu riêng",
+
+  "lang": "vi",
+
+  "dir": "ltr",
+
+  "categories": [
+    "business",
+    "productivity"
+  ],
+
+  "prefer_related_applications": false,
 
   "icons": [
 
@@ -35,7 +48,8 @@
     {
       "src": "apple-touch-icon.png",
       "sizes": "180x180",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
 
   ]
