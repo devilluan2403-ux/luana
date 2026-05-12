@@ -671,6 +671,44 @@ toggleBtn.addEventListener("click", ()=>{
 /* =========================================
                     INIT
 ========================================= */
+/* =========================================
+      CHẶN KÉO XUỐNG RELOAD ANDROID
+========================================= */
+
+let touchStartY = 0;
+
+document.addEventListener(
+  "touchstart",
+  e => {
+
+    touchStartY = e.touches[0].clientY;
+  },
+  { passive:false }
+);
+
+
+document.addEventListener(
+  "touchmove",
+  e => {
+
+    const touchY = e.touches[0].clientY;
+
+    const isTop =
+      window.scrollY <= 0;
+
+    const pullingDown =
+      touchY > touchStartY;
+
+    if (
+      isTop &&
+      pullingDown
+    ) {
+
+      e.preventDefault();
+    }
+  },
+  { passive:false }
+);
 
 updateDisplay();
 
