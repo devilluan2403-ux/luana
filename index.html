@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+
   <meta charset="utf-8">
 
   <meta
@@ -27,7 +28,10 @@
 
   <title>Ghi Số Sầu Riêng</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 
   <!-- ICON IOS -->
   <link
@@ -46,7 +50,11 @@
 
 <body>
 
-<!-- MÀN HÌNH MẬT KHẨU -->
+
+<!-- =====================================
+            MÀN HÌNH MẬT KHẨU
+===================================== -->
+
 <div id="passwordScreen" class="pw-screen hidden">
 
   <div class="pw-box">
@@ -58,7 +66,7 @@
       type="password"
       maxlength="20"
       placeholder="Nhập mật khẩu"
-    />
+    >
 
     <button id="pwLoginBtn">
       Mở ứng dụng
@@ -69,23 +77,48 @@
 </div>
 
 
+<!-- =====================================
+                APP
+===================================== -->
+
 <main class="screen">
 
-  <!-- NGÀY + THÁI RI -->
+
+  <!-- =====================================
+          NGÀY + KHO + THÁI RI
+  ===================================== -->
+
   <section class="card card-top">
 
-    <div class="date-wrapper">
 
-      <div
-        class="date-pill"
-        id="datePill"
-      ></div>
+    <!-- KHO + NGÀY -->
+    <div class="top-double">
 
+      <!-- KHO -->
       <input
-        id="dateInput"
-        type="date"
-        class="date-input-real"
-      />
+        type="text"
+        id="khoInput"
+        class="top-input"
+        placeholder="Tên kho"
+        autocomplete="off"
+      >
+
+
+      <!-- NGÀY -->
+      <div class="date-wrapper">
+
+        <div
+          class="date-pill"
+          id="datePill"
+        ></div>
+
+        <input
+          id="dateInput"
+          type="date"
+          class="date-input-real"
+        >
+
+      </div>
 
     </div>
 
@@ -110,13 +143,26 @@
     </div>
 
 
-    <!-- BIỂN SỐ XE -->
-    <div class="plate-wrap">
+    <!-- BIỂN SỐ + STT -->
+    <div class="top-double">
 
+
+      <!-- BIỂN SỐ -->
       <input
         type="text"
         id="plateInput"
-        placeholder="Nhập biển số xe"
+        class="top-input"
+        placeholder="Biển số xe"
+        autocomplete="off"
+      >
+
+
+      <!-- STT -->
+      <input
+        type="text"
+        id="sttInput"
+        class="top-input stt-input"
+        placeholder="STT"
         autocomplete="off"
       >
 
@@ -125,41 +171,98 @@
   </section>
 
 
-  <!-- TỔNG -->
+  <!-- =====================================
+                  TỔNG
+  ===================================== -->
+
   <section class="card card-totals">
 
-    <!-- A B C -->
+
+    <!-- HÀNG 1 -->
     <div class="totals-row">
 
       <div class="total-pill">
-        <div class="label">A</div>
-        <div class="value" id="sumA">0</div>
+
+        <div class="label">
+          A
+        </div>
+
+        <div
+          class="value"
+          id="sumA"
+        >
+          0
+        </div>
+
       </div>
 
-      <div class="total-pill">
-        <div class="label">B</div>
-        <div class="value" id="sumB">0</div>
-      </div>
 
       <div class="total-pill">
-        <div class="label">C</div>
-        <div class="value" id="sumC">0</div>
+
+        <div class="label">
+          B
+        </div>
+
+        <div
+          class="value"
+          id="sumB"
+        >
+          0
+        </div>
+
       </div>
 
     </div>
 
 
-    <!-- DẠT KEM -->
+    <!-- HÀNG 2 -->
     <div class="totals-row">
 
       <div class="total-pill">
-        <div class="label">DẠT</div>
-        <div class="value" id="sumDAT">0</div>
+
+        <div class="label">
+          C
+        </div>
+
+        <div
+          class="value"
+          id="sumC"
+        >
+          0
+        </div>
+
       </div>
 
+
       <div class="total-pill">
-        <div class="label">KEM</div>
-        <div class="value" id="sumKEM">0</div>
+
+        <div class="label">
+          DẠT
+        </div>
+
+        <div
+          class="value"
+          id="sumDAT"
+        >
+          0
+        </div>
+
+      </div>
+
+
+      <div class="total-pill">
+
+        <div class="label">
+          KEM
+        </div>
+
+        <div
+          class="value"
+          id="sumKEM"
+        >
+          0
+        </div>
+
       </div>
 
     </div>
@@ -184,8 +287,12 @@
   </section>
 
 
-  <!-- INPUT -->
+  <!-- =====================================
+                INPUT
+  ===================================== -->
+
   <section class="card card-input">
+
 
     <!-- A B C -->
     <div class="select-row">
@@ -245,7 +352,10 @@
   </section>
 
 
-  <!-- KEYPAD -->
+  <!-- =====================================
+                KEYPAD
+  ===================================== -->
+
   <nav class="keypad">
 
     <button class="kbtn num">1</button>
@@ -260,7 +370,8 @@
     <button class="kbtn num">8</button>
     <button class="kbtn num">9</button>
 
-    <!-- CUỐI -->
+
+    <!-- BACK -->
     <button
       class="kbtn action"
       id="btnBack"
@@ -271,6 +382,7 @@
     <button class="kbtn num">0</button>
 
     <button class="kbtn num">.</button>
+
 
     <!-- ENTER -->
     <button
@@ -283,10 +395,15 @@
   </nav>
 
 
-  <!-- LỊCH SỬ -->
+  <!-- =====================================
+                LỊCH SỬ
+  ===================================== -->
+
   <section class="card card-history">
 
+
     <header class="history-header">
+
 
       <div class="top-history-title">
 
@@ -332,11 +449,17 @@
         <thead>
 
           <tr>
+
             <th>A</th>
+
             <th>B</th>
+
             <th>C</th>
+
             <th>DẠT</th>
+
             <th>KEM</th>
+
           </tr>
 
         </thead>
@@ -350,6 +473,7 @@
   </section>
 
 </main>
+
 
 <script src="app.js"></script>
 
