@@ -791,3 +791,24 @@ button{
   }
 
 }
+/* =========================================
+        CHẶN PULL TO REFRESH ANDROID
+========================================= */
+
+html,
+body{
+
+  overscroll-behavior-y:none;
+
+  overscroll-behavior-x:none;
+}
+
+
+/* PWA */
+
+body{
+
+  overflow-x:hidden;
+
+  touch-action:manipulation;
+}
