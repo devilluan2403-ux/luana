@@ -284,21 +284,33 @@ body{
 
 .total-pill{
 
-  background:#eee;
+  background:white;
+
+  border:1px solid var(--pill-border);
 
   border-radius:12px;
 
   text-align:center;
 
-  padding:12px 8px;
+  padding:14px 8px;
 
   min-width:0;
+
+  display:flex;
+
+  flex-direction:column;
+
+  align-items:center;
+
+  justify-content:center;
+
+  transition:0.15s;
 }
 
 
 .total-pill .label{
 
-  font-size:13px;
+  font-size:14px;
 
   font-weight:800;
 
@@ -306,21 +318,22 @@ body{
 
   line-height:1.2;
 
-  word-break:break-word;
+  color:#111;
 }
 
 
 .total-pill .value{
 
-  font-size:18px;
+  font-size:22px;
 
-  font-weight:800;
+  font-weight:900;
+
+  color:#111;
 
   overflow:hidden;
 
   text-overflow:ellipsis;
 }
-
 
 .grand-pill{
 
