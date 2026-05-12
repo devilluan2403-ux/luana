@@ -6,7 +6,7 @@
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
   >
 
   <!-- IOS -->
@@ -52,7 +52,7 @@
 
 
 <!-- =====================================
-            MÀN HÌNH MẬT KHẨU
+            PASSWORD
 ===================================== -->
 
 <div id="passwordScreen" class="pw-screen hidden">
@@ -85,7 +85,7 @@
 
 
   <!-- =====================================
-          NGÀY + KHO + THÁI RI
+          TOP
   ===================================== -->
 
   <section class="card card-top">
@@ -99,7 +99,7 @@
         type="text"
         id="khoInput"
         class="top-input"
-        placeholder="Tên Lái"
+        placeholder="Tên lái"
         autocomplete="off"
       >
 
@@ -146,7 +146,6 @@
     <!-- BIỂN SỐ + STT -->
     <div class="top-double">
 
-
       <!-- BIỂN SỐ -->
       <input
         type="text"
@@ -172,97 +171,44 @@
 
 
   <!-- =====================================
-                  TỔNG
+                TỔNG
   ===================================== -->
 
   <section class="card card-totals">
 
 
-    <!-- HÀNG 1 -->
-    <div class="totals-row">
+    <!-- A B -->
+    <div class="select-row total-select-row">
 
-      <div class="total-pill">
-
-        <div class="label">
-          A
-        </div>
-
-        <div
-          class="value"
-          id="sumA"
-        >
-          0
-        </div>
-
+      <div class="btn-select total-box">
+        <div class="total-label">A</div>
+        <div class="total-value" id="sumA">0</div>
       </div>
 
-
-      <div class="total-pill">
-
-        <div class="label">
-          B
-        </div>
-
-        <div
-          class="value"
-          id="sumB"
-        >
-          0
-        </div>
-
+      <div class="btn-select total-box">
+        <div class="total-label">B</div>
+        <div class="total-value" id="sumB">0</div>
       </div>
 
     </div>
 
 
-    <!-- HÀNG 2 -->
-    <div class="totals-row">
+    <!-- C DẠT KEM -->
+    <div class="select-row total-select-row">
 
-      <div class="total-pill">
-
-        <div class="label">
-          C
-        </div>
-
-        <div
-          class="value"
-          id="sumC"
-        >
-          0
-        </div>
-
+      <div class="btn-select total-box">
+        <div class="total-label">C</div>
+        <div class="total-value" id="sumC">0</div>
       </div>
 
-
-      <div class="total-pill">
-
-        <div class="label">
-          DẠT
-        </div>
-
-        <div
-          class="value"
-          id="sumDAT"
-        >
-          0
-        </div>
-
+      <div class="btn-select total-box">
+        <div class="total-label">DẠT</div>
+        <div class="total-value" id="sumDAT">0</div>
       </div>
 
-
-      <div class="total-pill">
-
-        <div class="label">
-          KEM
-        </div>
-
-        <div
-          class="value"
-          id="sumKEM"
-        >
-          0
-        </div>
-
+      <div class="btn-select total-box">
+        <div class="total-label">KEM</div>
+        <div class="total-value" id="sumKEM">0</div>
       </div>
 
     </div>
@@ -396,12 +342,33 @@
 
 
   <!-- =====================================
-                LỊCH SỬ
+            BUTTON MỞ POPUP
   ===================================== -->
 
-  <section class="card card-history">
+  <button
+    id="openHistory"
+    class="history-popup-btn"
+  >
+    XEM LỊCH SỬ
+  </button>
 
 
+</main>
+
+
+<!-- =====================================
+            POPUP LỊCH SỬ
+===================================== -->
+
+<div
+  id="historyPopup"
+  class="history-popup hidden"
+>
+
+  <div class="history-modal">
+
+
+    <!-- HEADER -->
     <header class="history-header">
 
 
@@ -424,14 +391,14 @@
           id="clearAll"
           class="small-btn"
         >
-          XÓA DỮ LIỆU
+          XÓA
         </button>
 
         <button
-          id="toggleBtn"
+          id="closeHistory"
           class="small-btn"
         >
-          ẨN
+          ĐÓNG
         </button>
 
       </div>
@@ -439,6 +406,7 @@
     </header>
 
 
+    <!-- BODY -->
     <div
       class="history-body"
       id="historyBody"
@@ -470,9 +438,9 @@
 
     </div>
 
-  </section>
+  </div>
 
-</main>
+</div>
 
 
 <script src="app.js"></script>
