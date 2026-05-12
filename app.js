@@ -32,6 +32,7 @@ const pwInput    = document.getElementById("pwInput");
 const pwLoginBtn = document.getElementById("pwLoginBtn");
 
 if (!localStorage.getItem("auth_ok")) {
+
     pwScreen.classList.remove("hidden");
 }
 
@@ -40,6 +41,7 @@ pwLoginBtn.addEventListener("click", ()=>{
     if (pwInput.value.trim() === APP_PASSWORD) {
 
         localStorage.setItem("auth_ok", "1");
+
         pwScreen.classList.add("hidden");
 
     } else {
@@ -61,7 +63,10 @@ let records = JSON.parse(
 
 let currentType  = null;
 let currentCat   = null;
+
 let currentPlate = "";
+let currentSTT   = "";
+
 let inputValue   = "";
 
 
@@ -72,14 +77,19 @@ let inputValue   = "";
 const dateInput = document.getElementById("dateInput");
 const datePill  = document.getElementById("datePill");
 
+const khoInput  = document.getElementById("khoInput");
+
 const typeBtns  = document.querySelectorAll(".type-btn");
 const catBtns   = document.querySelectorAll(".cat-btn");
 
 const plateInput = document.getElementById("plateInput");
+const sttInput   = document.getElementById("sttInput");
 
 const display   = document.getElementById("display");
 
+
 /* SUMMARY */
+
 const sumA      = document.getElementById("sumA");
 const sumB      = document.getElementById("sumB");
 const sumC      = document.getElementById("sumC");
@@ -89,7 +99,9 @@ const sumKEM    = document.getElementById("sumKEM");
 
 const totalAll  = document.getElementById("totalAll");
 
+
 /* HISTORY */
+
 const historyTable = document.getElementById("historyTable");
 const historyBody  = document.getElementById("historyBody");
 
@@ -138,6 +150,21 @@ if (savedDate) {
     );
 }
 
+
+/* KHO */
+
+khoInput.value =
+    localStorage.getItem("last_kho") || "";
+
+khoInput.addEventListener("input", ()=>{
+
+    localStorage.setItem(
+        "last_kho",
+        khoInput.value
+    );
+});
+
+
 function fDate(d){
 
     d = new Date(d);
@@ -145,8 +172,12 @@ function fDate(d){
     return `Ngày ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
 }
 
-datePill.textContent   = fDate(dateInput.value);
-historyDate.textContent = fDate(dateInput.value);
+datePill.textContent =
+    fDate(dateInput.value);
+
+historyDate.textContent =
+    fDate(dateInput.value);
+
 
 dateInput.addEventListener("change", ()=>{
 
@@ -155,10 +186,14 @@ dateInput.addEventListener("change", ()=>{
         dateInput.value
     );
 
-    datePill.textContent    = fDate(dateInput.value);
-    historyDate.textContent = fDate(dateInput.value);
+    datePill.textContent =
+        fDate(dateInput.value);
+
+    historyDate.textContent =
+        fDate(dateInput.value);
 
     renderSummary();
+
     renderHistory();
 });
 
@@ -174,6 +209,21 @@ plateInput.addEventListener("input", ()=>{
         .toUpperCase();
 
     renderSummary();
+
+    renderHistory();
+});
+
+
+/* =========================================
+                  NHẬP STT
+========================================= */
+
+sttInput.addEventListener("input", ()=>{
+
+    currentSTT = sttInput.value.trim();
+
+    renderSummary();
+
     renderHistory();
 });
 
@@ -187,6 +237,7 @@ typeBtns.forEach(btn=>{
     btn.addEventListener("click", ()=>{
 
         typeBtns.forEach(x=>{
+
             x.classList.remove("active");
         });
 
@@ -195,6 +246,7 @@ typeBtns.forEach(btn=>{
         currentType = btn.dataset.type;
 
         renderSummary();
+
         renderHistory();
     });
 });
@@ -209,6 +261,7 @@ catBtns.forEach(btn=>{
     btn.addEventListener("click", ()=>{
 
         catBtns.forEach(x=>{
+
             x.classList.remove("active");
         });
 
@@ -233,18 +286,26 @@ document.querySelectorAll(".num").forEach(btn=>{
             !currentPlate
         ){
 
-            alert("Vui lòng chọn THÁI/RI, loại hàng và nhập biển số xe!");
+            alert(
+                "Vui lòng chọn THÁI/RI, loại hàng và nhập biển số xe!"
+            );
 
             return;
         }
 
         const val = btn.textContent;
 
-        if (val === "." && inputValue.includes(".")) {
+        if (
+            val === "." &&
+            inputValue.includes(".")
+        ) {
             return;
         }
 
-        if (val === "." && inputValue === "") {
+        if (
+            val === "." &&
+            inputValue === ""
+        ) {
             return;
         }
 
@@ -281,7 +342,9 @@ document
         !currentCat ||
         !currentPlate
     ){
+
         alert("Nhập đầy đủ thông tin!");
+
         return;
     }
 
@@ -293,11 +356,15 @@ document
 
         date: dateInput.value,
 
+        kho: khoInput.value.trim(),
+
         type: currentType,
 
         cat: currentCat,
 
         plate: currentPlate,
+
+        stt: currentSTT,
 
         qty: Number(inputValue)
     };
@@ -308,6 +375,8 @@ document
         LS_KEY,
         JSON.stringify(records)
     );
+
+    /* chỉ xoá số lượng */
 
     inputValue = "";
 
@@ -335,6 +404,7 @@ function updateDisplay(){
 
         display.textContent =
             Number(inputValue).toLocaleString("vi-VN", {
+
                 maximumFractionDigits: 2
             });
 
@@ -377,13 +447,17 @@ function renderSummary(){
     });
 
     sumA.textContent = fmt(A);
+
     sumB.textContent = fmt(B);
+
     sumC.textContent = fmt(C);
 
     sumDAT.textContent = fmt(DAT);
+
     sumKEM.textContent = fmt(KEM);
 
     totalAll.textContent =
+
         fmt(
             A +
             B +
@@ -400,11 +474,17 @@ function renderSummary(){
 
 function deleteRecord(id){
 
-    if (!confirm("Bạn có chắc muốn xoá dữ liệu này không?")) {
+    if (
+        !confirm(
+            "Bạn có chắc muốn xoá dữ liệu này không?"
+        )
+    ) {
         return;
     }
 
-    records = records.filter(r => r.id !== id);
+    records = records.filter(
+        r => r.id !== id
+    );
 
     localStorage.setItem(
         LS_KEY,
@@ -428,11 +508,16 @@ function renderHistory(){
     if (!currentType || !currentPlate) return;
 
     const list = records
-        .filter(r => 
+
+        .filter(r =>
+
             r.type === currentType &&
+
             r.date === dateInput.value &&
+
             r.plate === currentPlate
         )
+
         .sort((a,b)=> b.id - a.id);
 
 
@@ -477,13 +562,38 @@ function renderHistory(){
             "KEM"
         ].forEach(cat => {
 
-            const td = document.createElement("td");
+            const td =
+                document.createElement("td");
 
 
             if (groups[cat][i]) {
 
-                td.textContent =
-                    fmt(groups[cat][i].qty);
+                const item =
+                    groups[cat][i];
+
+                td.innerHTML = `
+                    <div style="
+                        font-weight:700;
+                    ">
+                        ${fmt(item.qty)}
+                    </div>
+
+                    <div style="
+                        font-size:11px;
+                        color:#777;
+                        margin-top:3px;
+                    ">
+                        ${item.plate || ""}
+                    </div>
+
+                    <div style="
+                        font-size:11px;
+                        color:#999;
+                    ">
+                        STT:
+                        ${item.stt || "-"}
+                    </div>
+                `;
 
                 const del =
                     document.createElement("span");
@@ -494,9 +604,7 @@ function renderHistory(){
 
                 del.onclick = ()=>{
 
-                    deleteRecord(
-                        groups[cat][i].id
-                    );
+                    deleteRecord(item.id);
                 };
 
                 td.appendChild(del);
@@ -516,7 +624,11 @@ function renderHistory(){
 
 clearAllBtn.addEventListener("click", ()=>{
 
-    if(confirm("Xoá toàn bộ dữ liệu của ngày này?")){
+    if(
+        confirm(
+            "Xoá toàn bộ dữ liệu của ngày này?"
+        )
+    ){
 
         records = records.filter(
             r =>
@@ -547,8 +659,11 @@ toggleBtn.addEventListener("click", ()=>{
     historyBody.classList.toggle("hidden");
 
     toggleBtn.textContent =
+
         historyBody.classList.contains("hidden")
+
             ? "HIỆN"
+
             : "ẨN";
 });
 
