@@ -262,7 +262,7 @@ body{
 
   flex-direction:column;
 
-  align-items:center;
+  gap:10px;
 }
 
 
@@ -270,41 +270,27 @@ body{
 
 .totals-row{
 
-  display:grid;
+  display:flex;
 
-  gap:0;
-
-  margin-bottom:0;
+  gap:10px;
 }
 
 
-/* A B C */
-
-.totals-row:first-child{
-
-  grid-template-columns:repeat(3,90px);
-}
-
-
-/* DẠT KEM */
-
-.totals-row:last-child{
-
-  grid-template-columns:repeat(2,82px);
-
-  margin-top:-1px;
-}
-
-
-/* Ô */
+/* Ô tổng */
 
 .total-pill{
 
-  background:#f3f3f3;
+  flex:1;
 
-  border:1px solid #444;
+  min-width:0;
 
-  height:62px;
+  background:white;
+
+  border:1px solid var(--pill-border);
+
+  border-radius:12px;
+
+  padding:14px 8px;
 
   display:flex;
 
@@ -314,17 +300,7 @@ body{
 
   justify-content:center;
 
-  border-radius:0;
-
-  margin-left:-1px;
-}
-
-
-/* FIX VIỀN */
-
-.totals-row .total-pill:first-child{
-
-  margin-left:0;
+  text-align:center;
 }
 
 
@@ -332,15 +308,15 @@ body{
 
 .total-pill .label{
 
-  font-size:18px;
+  font-size:14px;
 
-  font-weight:500;
-
-  line-height:1;
-
-  margin-bottom:4px;
+  font-weight:800;
 
   color:#111;
+
+  margin-bottom:6px;
+
+  line-height:1.2;
 }
 
 
@@ -348,13 +324,15 @@ body{
 
 .total-pill .value{
 
-  font-size:16px;
+  font-size:22px;
 
-  font-weight:500;
-
-  line-height:1;
+  font-weight:900;
 
   color:#111;
+
+  overflow:hidden;
+
+  text-overflow:ellipsis;
 }
 
 
@@ -362,15 +340,15 @@ body{
 
 .grand-pill{
 
-  margin-top:14px;
-
-  width:100%;
-
   background:var(--accent);
+
+  border:1px solid var(--accent-strong);
 
   border-radius:12px;
 
-  padding:14px;
+  padding:16px;
+
+  margin-top:4px;
 
   text-align:center;
 }
@@ -378,24 +356,25 @@ body{
 
 .grand-pill .label{
 
-  color:white;
-
   font-size:14px;
 
   font-weight:800;
 
   margin-bottom:4px;
+
+  color:white;
 }
 
 
 .grand-pill .value{
 
-  color:white;
-
   font-size:28px;
 
   font-weight:900;
+
+  color:white;
 }
+
 /* =========================================
                   DISPLAY
 ========================================= */
